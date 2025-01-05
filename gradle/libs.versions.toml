@@ -1,18 +1,34 @@
 [versions]
 agp = "8.7.0"
+commonsCollections4 = "4.4"
+commonsCompress = "1.20"
+commonsIo = "2.5"
+commonsLang3 = "3.11"
+commonsText = "1.9"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
+mapsforge = "4674895"
 material = "1.10.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
 
 [libraries]
+commons-collections4 = { module = "org.apache.commons:commons-collections4", version.ref = "commonsCollections4" }
+commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commonsCompress" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }
+commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commonsLang3" }
+commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+mapsforge-core = { module = "com.github.mapsforge.mapsforge:mapsforge-core", version.ref = "mapsforge" }
+mapsforge-map = { module = "com.github.mapsforge.mapsforge:mapsforge-map", version.ref = "mapsforge" }
+mapsforge-map-android = { module = "com.github.mapsforge.mapsforge:mapsforge-map-android", version.ref = "mapsforge" }
+mapsforge-map-reader = { module = "com.github.mapsforge.mapsforge:mapsforge-map-reader", version.ref = "mapsforge" }
+mapsforge-themes = { module = "com.github.mapsforge.mapsforge:mapsforge-themes", version.ref = "mapsforge" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }

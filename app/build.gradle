@@ -4,12 +4,12 @@ plugins {
 
 android {
     namespace 'space.itoncek.trailcompass.app'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "space.itoncek.trailcompass.app"
         minSdk 26
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
@@ -29,7 +29,17 @@ android {
 }
 
 dependencies {
-
+    // Apache Commons
+    implementation libs.commons.collections4
+    implementation libs.commons.compress
+    implementation libs.commons.lang3
+    implementation libs.commons.text
+    implementation libs.commons.io
+    implementation libs.mapsforge.core
+    implementation libs.mapsforge.map
+    implementation libs.mapsforge.map.android
+    implementation libs.mapsforge.map.reader
+    implementation libs.mapsforge.themes
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
