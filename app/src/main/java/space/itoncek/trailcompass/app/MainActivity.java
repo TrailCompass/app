@@ -21,8 +21,12 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        findViewById(R.id.button).setOnClickListener((e)-> {
+        findViewById(R.id.map_button).setOnClickListener((e)-> {
             Intent myIntent = new Intent(e.getContext(), MapActivity.class);
+            e.getContext().startActivity(myIntent);
+        });
+        findViewById(R.id.nfc_test).setOnClickListener((e)-> {
+            Intent myIntent = new Intent(e.getContext(), QRActivity.class);
             e.getContext().startActivity(myIntent);
         });
     }

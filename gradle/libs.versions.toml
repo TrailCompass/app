@@ -1,20 +1,22 @@
 [versions]
-agp = "8.7.0"
+agp = "8.7.3"
+barcodescannerview = "1.6.0"
 commonsCollections4 = "4.4"
-commonsCompress = "1.20"
-commonsIo = "2.5"
-commonsLang3 = "3.11"
+commonsCompress = "1.22"
+commonsIo = "2.16.1"
+commonsLang3 = "3.14.0"
 commonsText = "1.9"
 junit = "4.13.2"
-junitVersion = "1.1.5"
-espressoCore = "3.5.1"
-appcompat = "1.6.1"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
 mapsforge = "4674895"
-material = "1.10.0"
-activity = "1.8.0"
-constraintlayout = "2.1.4"
+material = "1.12.0"
+activity = "1.9.3"
+constraintlayout = "2.2.0"
 
 [libraries]
+barcodescannerview = { module = "com.github.markusfisch:BarcodeScannerView", version.ref = "barcodescannerview" }
 commons-collections4 = { module = "org.apache.commons:commons-collections4", version.ref = "commonsCollections4" }
 commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commonsCompress" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }

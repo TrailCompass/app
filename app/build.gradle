@@ -23,8 +23,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 }
 
@@ -40,6 +40,7 @@ dependencies {
     implementation libs.mapsforge.map.android
     implementation libs.mapsforge.map.reader
     implementation libs.mapsforge.themes
+    implementation libs.barcodescannerview
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
