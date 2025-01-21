@@ -29,5 +29,9 @@ public class MainActivity extends AppCompatActivity {
             Intent myIntent = new Intent(e.getContext(), QRActivity.class);
             e.getContext().startActivity(myIntent);
         });
+        findViewById(R.id.notif_test).setOnClickListener((e)-> {
+            Intent myIntent = new Intent(e.getContext(), NotificationActivity.class);
+            e.getContext().startActivity(myIntent);
+        });
     }
 }
