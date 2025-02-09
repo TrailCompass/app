@@ -2,4 +2,12 @@
     <string name="app_name">TrailCompass</string>
     <string name="channel_name">Main message channel</string>
     <string name="channel_description">All messages related to TrailCompass go through this one</string>
+    <string name="version_unknown">v#.#.#.#</string>
+    <string name="version_known_prefix">v%s</string>
+    <string name="select_gamemode">Select a gamemode!</string>
+
+    <string-array name="gamemodes">
+        <item>Hide and seek</item>
+        <item>Debug</item>
+    </string-array>
 </resources>

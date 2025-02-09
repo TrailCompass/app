@@ -1,13 +1,11 @@
 package space.itoncek.trailcompass.app;
 
 import android.Manifest;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -35,7 +33,7 @@ public class NotificationActivity extends AppCompatActivity {
                     Toast.makeText(this, "Permission has been granted!", Toast.LENGTH_SHORT).show();
                     createNotificationChannel();
                 } else {
-                    Intent myIntent = new Intent(this.getBaseContext(), MainActivity.class);
+                    Intent myIntent = new Intent(this.getBaseContext(), TestActivity.class);
                     this.getBaseContext().startActivity(myIntent);
                 }
             });
