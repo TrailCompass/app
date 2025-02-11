@@ -1,8 +1,7 @@
-package space.itoncek.trailcompass.app;
+package space.itoncek.trailcompass.app.debug;
 
 import android.os.Bundle;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -16,6 +15,7 @@ import java.util.Arrays;
 
 import de.markusfisch.android.barcodescannerview.widget.BarcodeScannerView;
 import de.markusfisch.android.zxingcpp.ZxingCpp;
+import space.itoncek.trailcompass.app.R;
 
 public class QRActivity extends AppCompatActivity {
 

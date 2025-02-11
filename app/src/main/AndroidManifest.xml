@@ -29,7 +29,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TrailCompass">
         <activity
-            android:name=".MainMenuActivity"
+            android:name=".mainmenu.MainMenuActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,16 +37,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NotificationActivity"
+            android:name=".debug.NotificationActivity"
             android:exported="false" />
         <activity
-            android:name=".QRActivity"
+            android:name=".debug.QRActivity"
             android:exported="false" />
         <activity
-            android:name=".MapActivity"
+            android:name=".debug.MapActivity"
             android:exported="false" />
         <activity
-            android:name=".TestActivity"
+            android:name=".debug.TestActivity"
             android:exported="true">
         </activity>
     </application>

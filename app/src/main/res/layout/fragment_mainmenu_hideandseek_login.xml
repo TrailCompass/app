@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/Base.Theme.TrailCompass"
-    tools:context=".MainmenuHideandseekLogin">
+    tools:context=".hideandseek.MainmenuHideandseekLogin">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:layout_height="match_parent">
 
             <EditText
-                android:id="@+id/hideandseek_server_url"
+                android:id="@+id/hideandseek_fragment_server_url"
                 android:layout_width="0dp"
                 android:layout_height="48sp"
                 android:layout_marginStart="8dp"
@@ -27,7 +27,7 @@
                 android:ems="10"
                 android:hint="Server URL"
                 android:inputType="textUri"
-                app:layout_constraintBottom_toTopOf="@+id/hideandseek_username"
+                app:layout_constraintBottom_toTopOf="@+id/hideandseek_fragment_username"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -35,35 +35,52 @@
                 app:layout_constraintVertical_chainStyle="spread" />
 
             <EditText
-                android:id="@+id/hideandseek_username"
+                android:id="@+id/hideandseek_fragment_username"
                 android:layout_width="0dp"
                 android:layout_height="48sp"
                 android:layout_marginTop="8dp"
                 android:ems="10"
                 android:hint="Username"
                 android:inputType="text"
-                app:layout_constraintBottom_toTopOf="@+id/hideandseek_password"
-                app:layout_constraintEnd_toEndOf="@+id/hideandseek_server_url"
+                app:layout_constraintBottom_toTopOf="@+id/hideandseek_fragment_password"
+                app:layout_constraintEnd_toEndOf="@+id/hideandseek_fragment_server_url"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="@+id/hideandseek_server_url"
-                app:layout_constraintTop_toBottomOf="@+id/hideandseek_server_url" />
+                app:layout_constraintStart_toStartOf="@+id/hideandseek_fragment_server_url"
+                app:layout_constraintTop_toBottomOf="@+id/hideandseek_fragment_server_url" />
 
             <EditText
-                android:id="@+id/hideandseek_password"
+                android:id="@+id/hideandseek_fragment_password"
                 android:layout_width="0dp"
                 android:layout_height="48sp"
                 android:layout_marginTop="8dp"
                 android:ems="10"
                 android:hint="Password"
                 android:inputType="textPassword"
-                app:layout_constraintBottom_toTopOf="@+id/hideandseek_isadmin"
-                app:layout_constraintEnd_toEndOf="@+id/hideandseek_username"
+                app:layout_constraintBottom_toTopOf="@+id/hideandseek_fragment_isadmin"
+                app:layout_constraintEnd_toEndOf="@+id/hideandseek_fragment_username"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="@+id/hideandseek_username"
-                app:layout_constraintTop_toBottomOf="@+id/hideandseek_username" />
+                app:layout_constraintStart_toStartOf="@+id/hideandseek_fragment_username"
+                app:layout_constraintTop_toBottomOf="@+id/hideandseek_fragment_username" />
+
+            <CheckBox
+                android:id="@+id/hideandseek_fragment_isadmin"
+                android:layout_width="wrap_content"
+                android:layout_height="48sp"
+                android:layout_marginTop="8dp"
+                android:buttonTint="@color/design_fg"
+                android:buttonTintMode="multiply"
+                android:checked="true"
+                android:clickable="true"
+                android:text="Admin login?"
+                android:textColor="@color/design_fg"
+                android:textIsSelectable="false"
+                app:layout_constraintBottom_toTopOf="@id/hideandseek_fragment_login"
+                app:layout_constraintEnd_toEndOf="@+id/hideandseek_fragment_password"
+                app:layout_constraintStart_toStartOf="@+id/hideandseek_fragment_password"
+                app:layout_constraintTop_toBottomOf="@+id/hideandseek_fragment_password" />
 
             <Button
-                android:id="@+id/hideandseek_login"
+                android:id="@+id/hideandseek_fragment_login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -72,21 +89,9 @@
                 android:textColor="@color/design_fg"
                 app:cornerRadius="8sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/hideandseek_isadmin"
-                app:layout_constraintStart_toStartOf="@+id/hideandseek_isadmin"
-                app:layout_constraintTop_toBottomOf="@+id/hideandseek_isadmin" />
-
-            <CheckBox
-                android:id="@+id/hideandseek_isadmin"
-                android:layout_width="wrap_content"
-                android:layout_height="48sp"
-                android:layout_marginTop="8dp"
-                android:text="Admin login?"
-                app:layout_constraintBottom_toTopOf="@id/hideandseek_login"
-                app:layout_constraintEnd_toEndOf="@+id/hideandseek_password"
-                app:layout_constraintStart_toStartOf="@+id/hideandseek_password"
-                app:layout_constraintTop_toBottomOf="@+id/hideandseek_password" />
-
+                app:layout_constraintEnd_toEndOf="@+id/hideandseek_fragment_isadmin"
+                app:layout_constraintStart_toStartOf="@+id/hideandseek_fragment_isadmin"
+                app:layout_constraintTop_toBottomOf="@+id/hideandseek_fragment_isadmin" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 

@@ -1,11 +1,8 @@
-package space.itoncek.trailcompass.app;
+package space.itoncek.trailcompass.app.debug;
 
-import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -24,6 +21,8 @@ import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.internal.MapsforgeThemes;
 
 import java.io.FileInputStream;
+
+import space.itoncek.trailcompass.app.R;
 
 public class MapActivity extends AppCompatActivity {
     private MapView mapView;

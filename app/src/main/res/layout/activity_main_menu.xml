@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/design_shadow"
-    tools:context=".MainMenuActivity">
+    tools:context=".mainmenu.MainMenuActivity">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
@@ -54,39 +54,23 @@
 
     <!--Create a TextInputLayout and choose the style,
         for now we are choosing the OutlinedBox ExposedDropdownMenu   -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    <Spinner
+        android:id="@+id/spinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_margin="20dp"
+        android:spinnerMode="dropdown"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardView">
-
-        <!-- Inside text input layout add
-              an auto complete text view
-                and make its input type to none-->
-        <AutoCompleteTextView
-            android:id="@+id/autoCompleteTextView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:fontFamily="@font/normal"
-            android:inputType="none"
-            android:text="@string/select_gamemode"
-            android:textColor="@color/design_fg" />
-
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView"
-        android:name="space.itoncek.trailcompass.app.MainmenuHideandseekLogin"
+        android:id="@+id/initFragment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/textInputLayout"
-        app:layout_constraintStart_toStartOf="@+id/textInputLayout"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintEnd_toEndOf="@+id/spinner"
+        app:layout_constraintStart_toStartOf="@+id/spinner"
+        app:layout_constraintTop_toBottomOf="@+id/spinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

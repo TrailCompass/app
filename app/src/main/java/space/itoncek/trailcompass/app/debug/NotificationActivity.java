@@ -1,4 +1,4 @@
-package space.itoncek.trailcompass.app;
+package space.itoncek.trailcompass.app.debug;
 
 import android.Manifest;
 import android.app.NotificationChannel;
@@ -22,6 +22,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.util.Random;
+
+import space.itoncek.trailcompass.app.R;
 
 public class NotificationActivity extends AppCompatActivity {
 

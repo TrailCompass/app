@@ -1,4 +1,4 @@
-package space.itoncek.trailcompass.app;
+package space.itoncek.trailcompass.app.debug;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import space.itoncek.trailcompass.app.R;
 
 public class TestActivity extends AppCompatActivity {
 
