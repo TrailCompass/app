@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TrailCompass</string>
+    <string name="channel_name">Hlavní kanál zpráv</string>
+    <string name="channel_description">Všechny zprávy, týkající se aplikace TrailCompass jsou skrze tento kanál</string>
+    <string name="select_gamemode">Vyber herní mód</string>
+</resources>

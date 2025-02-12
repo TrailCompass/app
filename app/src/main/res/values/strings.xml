@@ -2,9 +2,13 @@
     <string name="app_name">TrailCompass</string>
     <string name="channel_name">Main message channel</string>
     <string name="channel_description">All messages related to TrailCompass go through this one</string>
-    <string name="version_unknown">v#.#.#.#</string>
-    <string name="version_known_prefix">v%s</string>
+    <string name="version_unknown" translatable="false">v#.#.#.#</string>
+    <string name="version_known_prefix" translatable="false">v%s</string>
     <string name="select_gamemode">Select a gamemode!</string>
+    <string name="fragment_status_unknown" translatable="false">❔</string>
+    <string name="fragment_status_ok" translatable="false">✅</string>
+    <string name="fragment_status_dev" translatable="false">🛠⚠</string>
+    <string name="fragment_status_incompatible" translatable="false">‼</string>
 
     <string-array name="gamemodes">
         <item>Hide and seek</item>

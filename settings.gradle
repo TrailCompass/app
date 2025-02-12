@@ -23,3 +23,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "TrailCompass"
 include ':app'
+include ':api'

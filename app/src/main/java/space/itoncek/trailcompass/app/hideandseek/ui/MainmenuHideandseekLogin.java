@@ -1,0 +1,161 @@
+package space.itoncek.trailcompass.app.hideandseek.ui;
+
+import static com.google.common.hash.Hashing.sha512;
+
+import android.content.Intent;
+import android.os.Bundle;
+
+import androidx.fragment.app.Fragment;
+
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.nio.charset.Charset;
+import java.util.Objects;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
+
+import space.itoncek.trailcompass.app.R;
+import space.itoncek.trailcompass.app.hideandseek.api.HideAndSeekAPIFactory;
+import space.itoncek.trailcompass.client.api.HideAndSeekAPI;
+import space.itoncek.trailcompass.client.api.HideAndSeekConfig;
+import space.itoncek.trailcompass.client.api.ServerValidity;
+
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link MainmenuHideandseekLogin#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class MainmenuHideandseekLogin extends Fragment {
+
+    public MainmenuHideandseekLogin() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment MainmenuHideandseekLogin.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static MainmenuHideandseekLogin newInstance(String param1, String param2) {
+        MainmenuHideandseekLogin fragment = new MainmenuHideandseekLogin();
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_mainmenu_hideandseek_login, container, false);
+
+        HideAndSeekAPI api = new HideAndSeekAPIFactory(v.getContext().getFilesDir()).generateHideAndSeekAPI();
+        HideAndSeekConfig config = api.getConfig();
+
+        if(!config.base_url.isEmpty()) {
+            ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).setText(config.base_url);
+        } else {
+            ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).setText("");
+        }
+
+        if(!config.username.isEmpty()) {
+            ((EditText) v.findViewById(R.id.hideandseek_fragment_username)).setText(config.username);
+        } else {
+            ((EditText) v.findViewById(R.id.hideandseek_fragment_username)).setText("");
+        }
+
+        if(!config.passwordHash.isEmpty()) {
+            ((EditText) v.findViewById(R.id.hideandseek_fragment_password)).setHint("<not changed>");
+            ((EditText) v.findViewById(R.id.hideandseek_fragment_password)).setText("");
+        } else {
+            ((EditText) v.findViewById(R.id.hideandseek_fragment_password)).setHint("Password");
+            ((EditText) v.findViewById(R.id.hideandseek_fragment_password)).setText("");
+        }
+
+
+        TextWatcher tw = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                HideAndSeekConfig c = api.getConfig();
+                c.base_url = ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText().toString();
+                api.saveConfig(c);
+                CountDownLatch cdl = new CountDownLatch(1);
+                AtomicReference<ServerValidity> serverValidity = new AtomicReference<>();
+                Thread t = new Thread(() -> {
+                    try {
+                        serverValidity.set(api.checkValidity());
+                        cdl.countDown();
+                    } catch (Exception e) {
+                        Log.v(MainmenuHideandseekLogin.class.getName(), "Unable to contact the server");
+                        serverValidity.set(ServerValidity.NOT_FOUND);
+                        cdl.countDown();
+                    }
+                });
+                t.start();
+                try {
+                    cdl.await();
+                } catch (InterruptedException e) {
+                    Log.d(MainmenuHideandseekLogin.class.getName(), "Interrupted", e);
+                }
+                int textID;
+                if (Objects.requireNonNull(serverValidity.get()) == ServerValidity.NOT_FOUND) {
+                    textID = R.string.fragment_status_unknown;
+                } else if (serverValidity.get() == ServerValidity.INCOMPATIBLE_VERSION) {
+                    textID = R.string.fragment_status_incompatible;
+                } else if (serverValidity.get() == ServerValidity.DEVELOPMENT_VERSION) {
+                    textID = R.string.fragment_status_dev;
+                } else if (serverValidity.get() == ServerValidity.OK) {
+                    textID = R.string.fragment_status_ok;
+                } else {
+                    throw new IllegalArgumentException();
+                }
+                ((TextView) v.findViewById(R.id.hideandseek_fragment_status)).setText(textID);
+            }
+        };
+
+        ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).addTextChangedListener(tw);
+
+        tw.afterTextChanged(((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText());
+
+        v.findViewById(R.id.hideandseek_fragment_login).setOnClickListener(c-> {
+            HideAndSeekConfig cfg = api.getConfig();
+            cfg.username = ((EditText) v.findViewById(R.id.hideandseek_fragment_username)).getText().toString();
+            String pwd = ((EditText) v.findViewById(R.id.hideandseek_fragment_password)).getText().toString();
+            if(!pwd.isEmpty()) {
+                cfg.passwordHash = sha512().hashString(pwd, Charset.defaultCharset()).toString();
+            }
+            cfg.base_url = ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText().toString();
+
+            api.saveConfig(cfg);
+
+            Intent myIntent = new Intent(v.getContext(), LoginActivity.class);
+            v.getContext().startActivity(myIntent);
+        });
+
+        return v;
+    }
+}
