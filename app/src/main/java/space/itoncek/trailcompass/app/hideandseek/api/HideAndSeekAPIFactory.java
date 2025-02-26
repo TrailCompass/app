@@ -37,7 +37,8 @@ public class HideAndSeekAPIFactory {
                         return cfg;
                     } catch (IOException | ClassNotFoundException e) {
                         Log.e("HideAndSeekConfigFactory", "Unable to read config!", e);
-                        return null;
+                        cfile.delete();
+                        return HideAndSeekConfig.generateEmptyConfig();
                     }
                 } else return HideAndSeekConfig.generateEmptyConfig();
             }

@@ -4,4 +4,18 @@
     <string name="channel_name">Hlavní kanál zpráv</string>
     <string name="channel_description">Všechny zprávy, týkající se aplikace TrailCompass jsou skrze tento kanál</string>
     <string name="select_gamemode">Vyber herní mód</string>
+    <string name="nospeak">Nebyl dodán popis</string>
+    <string name="acsbl_btn_switch_to_map">Přejít na mapu</string>
+    <string name="acsbl_btn_switch_to_questions">Přejít na otázky</string>
+    <string name="acsbl_btn_switch_to_chat">Přejít na chat</string>
+    <string name="acsbl_trailcompass_logo">Logo TrailCompassu</string>
+    <string name="acsbl_btn_switch_to_settings">Přejít do nastavení</string>
+    <string name="login_started">Přihlášen jako %s</string>
+    <string name="login_checking_map_hash">Kontroluji hash mapy!</string>
+    <string name="login_map_update_needed">Nová mapa k dispozici!</string>
+    <string name="login_map_download_progress">Stahování mapy {0}%</string>
+    <string name="login_succes">Přihlášen jako %s, stahuji aktualizace mapy</string>
+    <string name="login_wrong_password">Přihlášení se nezdařilo, zkontroluj jméno a heslo!</string>
+    <string name="login_wrong_version">Server je na jiné verzi!</string>
+    <string name="login_unable_to_connect">Nebylo možné navázat komunikaci se serverem!</string>
 </resources>

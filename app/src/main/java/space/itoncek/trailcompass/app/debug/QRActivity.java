@@ -29,7 +29,7 @@ public class QRActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         WindowInsetsControllerCompat controller = new WindowInsetsControllerCompat(getWindow(), getWindow().getDecorView());
         controller.hide(WindowInsetsCompat.Type.systemBars());
-        setContentView(R.layout.activity_qr);
+        setContentView(R.layout.activity_debug_qr);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

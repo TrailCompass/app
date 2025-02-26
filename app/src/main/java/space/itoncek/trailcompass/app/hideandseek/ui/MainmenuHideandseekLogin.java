@@ -66,19 +66,19 @@ public class MainmenuHideandseekLogin extends Fragment {
         HideAndSeekAPI api = new HideAndSeekAPIFactory(v.getContext().getFilesDir()).generateHideAndSeekAPI();
         HideAndSeekConfig config = api.getConfig();
 
-        if(!config.base_url.isEmpty()) {
+        if (!config.base_url.isEmpty()) {
             ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).setText(config.base_url);
         } else {
             ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).setText("");
         }
 
-        if(!config.username.isEmpty()) {
+        if (!config.username.isEmpty()) {
             ((EditText) v.findViewById(R.id.hideandseek_fragment_username)).setText(config.username);
         } else {
             ((EditText) v.findViewById(R.id.hideandseek_fragment_username)).setText("");
         }
 
-        if(!config.passwordHash.isEmpty()) {
+        if (!config.password_hash.isEmpty()) {
             ((EditText) v.findViewById(R.id.hideandseek_fragment_password)).setHint("<not changed>");
             ((EditText) v.findViewById(R.id.hideandseek_fragment_password)).setText("");
         } else {
@@ -100,40 +100,45 @@ public class MainmenuHideandseekLogin extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                HideAndSeekConfig c = api.getConfig();
-                c.base_url = ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText().toString();
-                api.saveConfig(c);
-                CountDownLatch cdl = new CountDownLatch(1);
-                AtomicReference<ServerValidity> serverValidity = new AtomicReference<>();
                 Thread t = new Thread(() -> {
+                    HideAndSeekConfig c = api.getConfig();
+
+                    getActivity().runOnUiThread(() -> {
+                        c.base_url = ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText().toString();
+                    });
+                    api.saveConfig(c);
+                    AtomicReference<ServerValidity> serverValidity = new AtomicReference<>();
+
                     try {
                         serverValidity.set(api.checkValidity());
-                        cdl.countDown();
                     } catch (Exception e) {
                         Log.v(MainmenuHideandseekLogin.class.getName(), "Unable to contact the server");
                         serverValidity.set(ServerValidity.NOT_FOUND);
-                        cdl.countDown();
                     }
+                    getActivity().runOnUiThread(() -> {
+                        int textID;
+                        if (Objects.requireNonNull(serverValidity.get()) == ServerValidity.NOT_FOUND) {
+                            textID = R.string.fragment_status_unknown;
+                        } else if (serverValidity.get() == ServerValidity.INCOMPATIBLE_VERSION) {
+                            textID = R.string.fragment_status_incompatible;
+                        } else if (serverValidity.get() == ServerValidity.DEVELOPMENT_VERSION) {
+                            textID = R.string.fragment_status_dev;
+                        } else if (serverValidity.get() == ServerValidity.OK) {
+                            textID = R.string.fragment_status_ok;
+                        } else {
+                            throw new IllegalArgumentException();
+                        }
+                        ((TextView) v.findViewById(R.id.hideandseek_fragment_status)).setText(textID);
+                    });
                 });
+
                 t.start();
+
                 try {
-                    cdl.await();
+                    t.join();
                 } catch (InterruptedException e) {
-                    Log.d(MainmenuHideandseekLogin.class.getName(), "Interrupted", e);
+                    throw new RuntimeException(e);
                 }
-                int textID;
-                if (Objects.requireNonNull(serverValidity.get()) == ServerValidity.NOT_FOUND) {
-                    textID = R.string.fragment_status_unknown;
-                } else if (serverValidity.get() == ServerValidity.INCOMPATIBLE_VERSION) {
-                    textID = R.string.fragment_status_incompatible;
-                } else if (serverValidity.get() == ServerValidity.DEVELOPMENT_VERSION) {
-                    textID = R.string.fragment_status_dev;
-                } else if (serverValidity.get() == ServerValidity.OK) {
-                    textID = R.string.fragment_status_ok;
-                } else {
-                    throw new IllegalArgumentException();
-                }
-                ((TextView) v.findViewById(R.id.hideandseek_fragment_status)).setText(textID);
             }
         };
 
@@ -141,12 +146,12 @@ public class MainmenuHideandseekLogin extends Fragment {
 
         tw.afterTextChanged(((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText());
 
-        v.findViewById(R.id.hideandseek_fragment_login).setOnClickListener(c-> {
+        v.findViewById(R.id.hideandseek_fragment_login).setOnClickListener(c -> {
             HideAndSeekConfig cfg = api.getConfig();
             cfg.username = ((EditText) v.findViewById(R.id.hideandseek_fragment_username)).getText().toString();
             String pwd = ((EditText) v.findViewById(R.id.hideandseek_fragment_password)).getText().toString();
-            if(!pwd.isEmpty()) {
-                cfg.passwordHash = sha512().hashString(pwd, Charset.defaultCharset()).toString();
+            if (!pwd.isEmpty()) {
+                cfg.password_hash = sha512().hashString(pwd, Charset.defaultCharset()).toString();
             }
             cfg.base_url = ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText().toString();
 

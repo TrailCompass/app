@@ -7,4 +7,153 @@
     android:layout_height="match_parent"
     tools:context=".hideandseek.ui.MapView">
 
+    <org.mapsforge.map.android.view.MapView
+        android:id="@+id/map_mapview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/nospeak"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
+    </org.mapsforge.map.android.view.MapView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="0dp"
+        android:layout_height="40sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop
+            ="16dp"
+        app:cardBackgroundColor="@color/design_bg"
+        app:cardCornerRadius="8sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/map_resetButton"
+                android:layout_width="32sp"
+                android:layout_height="32sp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/design_bg"
+                android:contentDescription="@string/acsbl_btn_reload"
+                android:scaleType="fitCenter"
+                android:src="@drawable/refresh_48"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <TextView
+                android:id="@+id/map_gameTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/bold"
+                android:text="@string/generic_loading"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/map_resetButton"
+                app:layout_constraintStart_toEndOf="@+id/map_username"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/map_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="@string/generic_loading"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="80sp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="8sp"
+        app:cardBackgroundColor="@color/design_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/map_switchToMap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/design_bg"
+                android:contentDescription="@string/acsbl_btn_switch_to_map"
+                android:src="@drawable/map_48"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/map_switchToQuestions"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/map_switchToQuestions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/design_bg"
+                android:contentDescription="@string/acsbl_btn_switch_to_questions"
+                android:src="@drawable/mystery_48"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/map_switchToChat"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/map_switchToMap"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/map_switchToChat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/design_bg"
+                android:contentDescription="@string/acsbl_btn_switch_to_chat"
+                android:src="@drawable/chat_48"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/map_switchToSettings"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/map_switchToQuestions"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/map_switchToSettings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/design_bg"
+                android:contentDescription="@string/acsbl_btn_switch_to_settings"
+                android:src="@drawable/settings_48"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/map_switchToChat"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.468" />
+
+            <ImageView
+                android:layout_width="16sp"
+                android:layout_height="16sp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="2dp"
+                android:contentDescription="@string/acsbl_trailcompass_logo"
+                android:src="@drawable/icon_foreground"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

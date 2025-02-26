@@ -1,9 +1,13 @@
 package space.itoncek.trailcompass.client.api;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.Objects;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -45,7 +49,7 @@ public abstract class HideAndSeekAPI {
         return ((mid-start) + (end-mid))/2L;
     }
 
-    public LoginResponse login() throws IOException {
+    public LoginResponse login() throws IOException, JSONException {
         HideAndSeekConfig cfg = getConfig();
 
         ServerValidity serverValidity = checkValidity();
@@ -54,7 +58,7 @@ public abstract class HideAndSeekAPI {
 
         String req = new JSONObject()
                 .put("username", cfg.username)
-                .put("passwordhash", cfg.passwordHash)
+                .put("passwordhash", cfg.password_hash)
                 .toString(4);
 
         Response res = post(cfg.base_url + "/uac/login", req);
@@ -70,6 +74,30 @@ public abstract class HideAndSeekAPI {
         }
         res.close();
         return LoginResponse.OK;
+    }
+
+    public String getMapHash() throws IOException {
+        HideAndSeekConfig cfg = getConfig();
+        try(Response authd = getAuthd(cfg.base_url + "/mapserver/getServerMapHash")) {
+            assert (authd != null ? authd.body() : null) != null;
+            return authd.body().string();
+        }
+    }
+
+    public boolean amIAdmin() throws IOException {
+        HideAndSeekConfig cfg = getConfig();
+        try(Response authd = getAuthd(cfg.base_url + "/uac/amIAdmin")) {
+            assert (authd != null ? authd.body() : null) != null;
+            return Boolean.parseBoolean(authd.body().string());
+        }
+    }
+
+    public @Nullable String myName() throws IOException {
+        HideAndSeekConfig cfg = getConfig();
+        try(Response authd = getAuthd(cfg.base_url + "/uac/myName")) {
+            assert (authd != null ? authd.body() : null) != null;
+            return authd.body().string();
+        }
     }
 
     public Response get(String url) throws IOException {
@@ -90,7 +118,7 @@ public abstract class HideAndSeekAPI {
         return client.newCall(request).execute();
     }
 
-    public Response postAuthd(String url, String json) throws IOException {
+    public @Nullable Response postAuthd(String url, String json) throws IOException {
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
                 .url(url)
@@ -98,6 +126,54 @@ public abstract class HideAndSeekAPI {
                 .post(body)
                 .build();
 
-        return client.newCall(request).execute();
+        Response response = client.newCall(request).execute();
+
+        if(response.code() == 418) {
+            try {
+                if (Objects.requireNonNull(login()) == LoginResponse.OK) {
+                    return getAuthd(url);
+                }
+                return null;
+            } catch (JSONException e) {
+                return null;
+            }
+        } else {
+            return response;
+        }
+    }
+
+    public @Nullable Response getAuthd(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization","Bearer " + getConfig().jwt_token)
+                .build();
+
+        Response response = client.newCall(request).execute();
+
+        if(response.code() == 418) {
+            try {
+                if (Objects.requireNonNull(login()) == LoginResponse.OK) {
+                    return getAuthd(url);
+                }
+                return null;
+            } catch (JSONException e) {
+                return null;
+            }
+        } else {
+            return response;
+        }
+    }
+
+    @SuppressWarnings("DefaultLocale")
+    public static String humanReadableByteCountSI(long bytes) {
+        if (-1000 < bytes && bytes < 1000) {
+            return bytes + " B";
+        }
+        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
+        while (bytes <= -999_950 || bytes >= 999_950) {
+            bytes /= 1000;
+            ci.next();
+        }
+        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
     }
 }

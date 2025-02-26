@@ -9,6 +9,22 @@
     <string name="fragment_status_ok" translatable="false">✅</string>
     <string name="fragment_status_dev" translatable="false">🛠⚠</string>
     <string name="fragment_status_incompatible" translatable="false">‼</string>
+    <string name="nospeak">No description provided</string>
+    <string name="acsbl_btn_switch_to_map">Switch to map</string>
+    <string name="acsbl_btn_switch_to_questions">Switch to questions</string>
+    <string name="acsbl_btn_switch_to_chat">Switch to chat</string>
+    <string name="acsbl_trailcompass_logo">TrailCompass logo</string>
+    <string name="acsbl_btn_switch_to_settings">Switch to Settings</string>
+    <string name="login_succes">Logged in as %s, downloading map updates</string>
+    <string name="login_wrong_password">Unable to login, check username and password!</string>
+    <string name="login_wrong_version">Server is on a different version!</string>
+    <string name="login_unable_to_connect">Unable to connect to the server!</string>
+    <string name="login_started">Logging in as %s</string>
+    <string name="login_checking_map_hash">Checking map hash!</string>
+    <string name="login_map_update_needed">Map update needed!</string>
+    <string name="login_map_download_progress">Map download {0}%</string>
+    <string name="generic_loading">Loading...</string>
+    <string name="acsbl_btn_reload">Reload all the meta on this page</string>
 
     <string-array name="gamemodes">
         <item>Hide and seek</item>

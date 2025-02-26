@@ -21,6 +21,7 @@ import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.internal.MapsforgeThemes;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import space.itoncek.trailcompass.app.R;
 
@@ -30,7 +31,7 @@ public class MapActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidGraphicFactory.createInstance(getApplication());
-        setContentView(R.layout.activity_map);
+        setContentView(R.layout.activity_debug_map);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -46,53 +47,29 @@ public class MapActivity extends AppCompatActivity {
 
     private void openMap(Uri uri) {
         try {
-            /*
-             * We then make some simple adjustments, such as showing a scale bar and zoom controls.
-             */        mapView.setClickable(true);
+            mapView.setClickable(true);
             mapView.getMapScaleBar().setVisible(true);
             mapView.setBuiltInZoomControls(true);
 
             Parameters.NUMBER_OF_THREADS = 8;
             Parameters.PARENT_TILES_RENDERING = Parameters.ParentTilesRendering.SPEED;
-            /*
-             * To avoid redrawing all the tiles all the time, we need to set up a tile cache with an
-             * utility method.
-             */
+
             TileCache tileCache = AndroidUtil.createTileCache(this, "mapcache",
                     mapView.getModel().displayModel.getTileSize(), 1f,
                     mapView.getModel().frameBufferModel.getOverdrawFactor());
 
-            /*
-             * Now we need to set up the process of displaying a map. A map can have several layers,
-             * stacked on top of each other. A layer can be a map or some visual elements, such as
-             * markers. Here we only show a map based on a mapsforge map file. For this we need a
-             * TileRendererLayer. A TileRendererLayer needs a TileCache to hold the generated map
-             * tiles, a map file from which the tiles are generated and Rendertheme that defines the
-             * appearance of the map.
-             */
             FileInputStream fis = (FileInputStream) getContentResolver().openInputStream(uri);
             MapDataStore mapDataStore = new MapFile(fis);
             TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapDataStore,
                     mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
             tileRendererLayer.setXmlRenderTheme(MapsforgeThemes.OSMARENDER);
 
-            /*
-             * On its own a tileRendererLayer does not know where to display the map, so we need to
-             * associate it with our mapView.
-             */
             mapView.getLayerManager().getLayers().add(tileRendererLayer);
 
-            /*
-             * The map also needs to know which area to display and at what zoom level.
-             * Note: this map position is specific to Berlin area.
-             */
             mapView.setCenter(new LatLong(50, 15));
             mapView.setZoomLevel((byte) 12);
-        } catch (Exception e) {
-            /*
-             * In case of map file errors avoid crash, but developers should handle these cases!
-             */
-            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 

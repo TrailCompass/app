@@ -5,6 +5,11 @@ plugins {
 dependencies {
     implementation libs.json
     implementation libs.okhttp
+    implementation libs.commons.collections4
+    implementation libs.commons.compress
+    implementation libs.commons.lang3
+    implementation libs.commons.text
+    implementation libs.commons.io
 }
 
 java {
