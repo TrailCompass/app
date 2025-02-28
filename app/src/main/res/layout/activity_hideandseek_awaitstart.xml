@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/design_shadow"
+    tools:context=".hideandseek.ui.AwaitStartActivity">
+
+    <TextView
+        android:id="@+id/await_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="128dp"
+        android:fontFamily="@font/bold"
+        android:text="@string/await_title"
+        android:textSize="48sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/await_user_message"
+        app:layout_constraintEnd_toEndOf="@+id/await_title"
+        app:layout_constraintStart_toStartOf="@+id/await_title"
+        app:layout_constraintTop_toBottomOf="@+id/await_title" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/await_admin_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="@color/design_bg"
+        app:cardCornerRadius="8sp"
+        app:cardElevation="8sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView4">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/await_admin_waiting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/await_admin_title"
+                app:layout_constraintBottom_toTopOf="@+id/await_admin_current_hider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintVertical_chainStyle="packed" />
+
+            <TextView
+                android:id="@+id/await_admin_current_hider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/await_admin_current_hider"
+                app:layout_constraintBottom_toTopOf="@+id/await_switch"
+                app:layout_constraintStart_toStartOf="@+id/await_admin_waiting"
+                app:layout_constraintTop_toBottomOf="@+id/await_admin_waiting" />
+
+            <Button
+                android:id="@+id/await_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/design_shadow"
+                android:text="@string/await_start_game"
+                android:textColor="@color/design_fg"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <Button
+                android:id="@+id/await_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/design_shadow"
+                android:text="@string/await_switch_header"
+                android:textColor="@color/design_fg"
+                app:layout_constraintBottom_toBottomOf="@+id/await_start"
+                app:layout_constraintStart_toStartOf="@+id/await_admin_current_hider"
+                app:layout_constraintTop_toBottomOf="@+id/await_admin_current_hider" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

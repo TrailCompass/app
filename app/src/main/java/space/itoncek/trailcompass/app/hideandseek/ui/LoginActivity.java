@@ -193,8 +193,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loaded() {
-        Toast.makeText(this, "Logged in!", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, MapView.class);
+        Intent intent = new Intent(this, AwaitStartActivity.class);
         startActivity(intent);
         finish();
     }

@@ -100,6 +100,15 @@ public abstract class HideAndSeekAPI {
         }
     }
 
+
+    public String getCurrentHider() throws IOException {
+        HideAndSeekConfig cfg = getConfig();
+        try(Response res = getAuthd(cfg.base_url + "/gamemanager/currentHider")){
+            assert (res != null ? res.body() : null) != null;
+            return res.body().string();
+        }
+    }
+
     public Response get(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
