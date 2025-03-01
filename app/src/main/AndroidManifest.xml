@@ -30,6 +30,9 @@
         android:theme="@style/Theme.TrailCompass"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".hideandseek.configurator.ConfiguratorActivity"
+            android:exported="false" />
+        <activity
             android:name=".hideandseek.ui.AwaitStartActivity"
             android:exported="false" />
         <activity

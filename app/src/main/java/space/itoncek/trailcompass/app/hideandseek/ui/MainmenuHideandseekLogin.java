@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 import space.itoncek.trailcompass.app.R;
 import space.itoncek.trailcompass.app.hideandseek.api.HideAndSeekAPIFactory;
@@ -100,19 +101,20 @@ public class MainmenuHideandseekLogin extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                Thread t = new Thread(() -> {
-                    HideAndSeekConfig c = api.getConfig();
+                HideAndSeekConfig c = api.getConfig();
 
-                    getActivity().runOnUiThread(() -> {
-                        c.base_url = ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText().toString();
-                    });
-                    api.saveConfig(c);
+                getActivity().runOnUiThread(() -> {
+                    c.base_url = ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText().toString();
+                });
+                api.saveConfig(c);
+
+                Thread t = new Thread(() -> {
                     AtomicReference<ServerValidity> serverValidity = new AtomicReference<>();
 
                     try {
                         serverValidity.set(api.checkValidity());
                     } catch (Exception e) {
-                        Log.v(MainmenuHideandseekLogin.class.getName(), "Unable to contact the server");
+                        Log.v(MainmenuHideandseekLogin.class.getName(), "Unable to contact the server",e);
                         serverValidity.set(ServerValidity.NOT_FOUND);
                     }
                     getActivity().runOnUiThread(() -> {

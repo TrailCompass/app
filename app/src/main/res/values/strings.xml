@@ -25,12 +25,13 @@
     <string name="login_map_download_progress">Map download {0}%</string>
     <string name="generic_loading">Loading...</string>
     <string name="acsbl_btn_reload">Reload all the meta on this page</string>
-    <string name="await_title">Awaiting Start</string>
-    <string name="await_user_message">Waiting for an admin to start this game!</string>
+    <string name="await_title_setup">Awaiting Start</string>
+    <string name="await_subtitle_setup">Waiting for an admin to start this game!</string>
     <string name="await_admin_current_hider">Current hider: %s</string>
-    <string name="await_admin_title"><![CDATA[Please select the hider & start the game]]></string>
+    <string name="await_admin_title">Please select the hider and start the game</string>
     <string name="await_start_game">Start game</string>
-    <string name="await_switch_header">Switch hider</string>
+    <string name="await_switch_hider">Switch hider</string>
+    <string name="await_setup">Setup</string>
 
     <string-array name="gamemodes">
         <item>Hide and seek</item>

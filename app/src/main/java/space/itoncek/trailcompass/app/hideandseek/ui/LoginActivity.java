@@ -1,5 +1,7 @@
 package space.itoncek.trailcompass.app.hideandseek.ui;
 
+import static com.google.common.hash.Hashing.sha256;
+import static com.google.common.hash.Hashing.sha512;
 import static space.itoncek.trailcompass.client.api.LoginResponse.UNABLE_TO_CONNECT;
 
 import android.content.Intent;
@@ -15,15 +17,18 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.json.JSONException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -114,9 +119,9 @@ public class LoginActivity extends AppCompatActivity {
 
                 runOnUiThread(()->mProgressLabel.setText(R.string.login_checking_map_hash));
                 String str = api.getMapHash();
+                String localFileHex = DigestUtils.sha256Hex(new FileInputStream(mapfile));
 
-                if (!str.equals(c.map_hash) || !mapfile.exists()) {
-                    c.map_hash = str;
+                if (!str.equals(localFileHex) || !mapfile.exists()) {
                     api.saveConfig(c);
                     runOnUiThread(()->mProgressLabel.setText(R.string.login_map_update_needed));
                     InputStream input = null;

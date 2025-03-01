@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import okhttp3.MediaType;
@@ -79,7 +80,7 @@ public abstract class HideAndSeekAPI {
     public String getMapHash() throws IOException {
         HideAndSeekConfig cfg = getConfig();
         try(Response authd = getAuthd(cfg.base_url + "/mapserver/getServerMapHash")) {
-            assert (authd != null ? authd.body() : null) != null;
+            assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
             return authd.body().string();
         }
     }
@@ -87,7 +88,7 @@ public abstract class HideAndSeekAPI {
     public boolean amIAdmin() throws IOException {
         HideAndSeekConfig cfg = getConfig();
         try(Response authd = getAuthd(cfg.base_url + "/uac/amIAdmin")) {
-            assert (authd != null ? authd.body() : null) != null;
+            assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
             return Boolean.parseBoolean(authd.body().string());
         }
     }
@@ -95,17 +96,49 @@ public abstract class HideAndSeekAPI {
     public @Nullable String myName() throws IOException {
         HideAndSeekConfig cfg = getConfig();
         try(Response authd = getAuthd(cfg.base_url + "/uac/myName")) {
-            assert (authd != null ? authd.body() : null) != null;
+            assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
             return authd.body().string();
         }
     }
 
 
-    public String getCurrentHider() throws IOException {
+    public @Nullable JSONObject getCurrentHider() throws IOException {
         HideAndSeekConfig cfg = getConfig();
         try(Response res = getAuthd(cfg.base_url + "/gamemanager/currentHider")){
+            if ((res != null ? res.body() : null) == null || !res.isSuccessful()) return null;
+            return new JSONObject(res.body().string());
+        }
+    }
+
+    public GameState getGameState() throws IOException {
+        HideAndSeekConfig cfg = getConfig();
+        try(Response res = getAuthd(cfg.base_url + "/gamemanager/gameState")){
+            assert (res != null ? res.body() : null) != null && res.isSuccessful();
+            return GameState.valueOf(res.body().string());
+        }
+    }
+
+    public boolean startGame() throws IOException {
+        HideAndSeekConfig cfg = getConfig();
+        try(Response res = postAuthd(cfg.base_url + "/gamemanager/finishSetup","{}")){
             assert (res != null ? res.body() : null) != null;
-            return res.body().string();
+            return res.isSuccessful();
+        }
+    }
+
+    public ZonedDateTime getGameStartTime() throws IOException {
+        HideAndSeekConfig cfg = getConfig();
+        try(Response res = getAuthd(cfg.base_url + "/gamemanager/startTime")){
+            assert (res != null ? res.body() : null) != null && res.isSuccessful();
+            return ZonedDateTime.parse(res.body().string());
+        }
+    }
+
+    public boolean cycleHider() throws IOException {
+        HideAndSeekConfig cfg = getConfig();
+        try(Response res = postAuthd(cfg.base_url + "/gamemanager/cycleHider","{}")){
+            assert (res != null ? res.body() : null) != null;
+            return res.isSuccessful();
         }
     }
 
@@ -160,6 +193,7 @@ public abstract class HideAndSeekAPI {
         Response response = client.newCall(request).execute();
 
         if(response.code() == 418) {
+            System.out.println("Refreshing tokens!");
             try {
                 if (Objects.requireNonNull(login()) == LoginResponse.OK) {
                     return getAuthd(url);
@@ -171,18 +205,5 @@ public abstract class HideAndSeekAPI {
         } else {
             return response;
         }
-    }
-
-    @SuppressWarnings("DefaultLocale")
-    public static String humanReadableByteCountSI(long bytes) {
-        if (-1000 < bytes && bytes < 1000) {
-            return bytes + " B";
-        }
-        CharacterIterator ci = new StringCharacterIterator("kMGTPE");
-        while (bytes <= -999_950 || bytes >= 999_950) {
-            bytes /= 1000;
-            ci.next();
-        }
-        return String.format("%.1f %cB", bytes / 1000.0, ci.current());
     }
 }

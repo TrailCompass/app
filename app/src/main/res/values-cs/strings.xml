@@ -18,4 +18,12 @@
     <string name="login_wrong_password">Přihlášení se nezdařilo, zkontroluj jméno a heslo!</string>
     <string name="login_wrong_version">Server je na jiné verzi!</string>
     <string name="login_unable_to_connect">Nebylo možné navázat komunikaci se serverem!</string>
+    <string name="generic_loading">Načítání...</string>
+    <string name="acsbl_btn_reload">Znovu načíst všechna metadata na této stránce</string>
+    <string name="await_title_setup">Čekání na start</string>
+    <string name="await_subtitle_setup">Admin musí zahájit tuto hru!</string>
+    <string name="await_admin_current_hider">Aktuální hider: %s</string>
+    <string name="await_admin_title">Prosím zvol hidera a začni hru</string>
+    <string name="await_start_game">Odstartovat hru</string>
+    <string name="await_switch_hider">Změnit hidera</string>
 </resources>

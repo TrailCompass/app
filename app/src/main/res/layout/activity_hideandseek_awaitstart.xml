@@ -14,36 +14,47 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="128dp"
         android:fontFamily="@font/bold"
-        android:text="@string/await_title"
+        android:text="@string/generic_loading"
         android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/await_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/await_user_message"
+        android:text="@string/generic_loading"
         app:layout_constraintEnd_toEndOf="@+id/await_title"
         app:layout_constraintStart_toStartOf="@+id/await_title"
         app:layout_constraintTop_toBottomOf="@+id/await_title" />
+
+    <Button
+        android:id="@+id/await_refresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/design_bg"
+        android:text="Reload"
+        android:textColor="@color/design_fg"
+        app:layout_constraintEnd_toEndOf="@+id/await_subtitle"
+        app:layout_constraintStart_toStartOf="@+id/await_subtitle"
+        app:layout_constraintTop_toBottomOf="@+id/await_subtitle" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/await_admin_card"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:visibility="gone"
         app:cardBackgroundColor="@color/design_bg"
         app:cardCornerRadius="8sp"
         app:cardElevation="8sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4">
+        app:layout_constraintTop_toBottomOf="@+id/await_refresh">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -74,27 +85,47 @@
 
             <Button
                 android:id="@+id/await_start"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:layout_marginEnd="12dp"
                 android:layout_marginBottom="8dp"
                 android:backgroundTint="@color/design_shadow"
                 android:text="@string/await_start_game"
                 android:textColor="@color/design_fg"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/await_setup" />
 
             <Button
                 android:id="@+id/await_switch"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
                 android:backgroundTint="@color/design_shadow"
-                android:text="@string/await_switch_header"
+                android:text="@string/await_switch_hider"
                 android:textColor="@color/design_fg"
                 app:layout_constraintBottom_toBottomOf="@+id/await_start"
+                app:layout_constraintEnd_toStartOf="@+id/await_setup"
+                app:layout_constraintHorizontal_chainStyle="spread"
                 app:layout_constraintStart_toStartOf="@+id/await_admin_current_hider"
                 app:layout_constraintTop_toBottomOf="@+id/await_admin_current_hider" />
+
+            <Button
+                android:id="@+id/await_setup"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:backgroundTint="@color/design_shadow"
+                android:text="@string/await_setup"
+                android:textColor="@color/design_fg"
+                app:layout_constraintBottom_toBottomOf="@+id/await_switch"
+                app:layout_constraintEnd_toStartOf="@+id/await_start"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/await_switch"
+                app:layout_constraintTop_toTopOf="@+id/await_switch" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
