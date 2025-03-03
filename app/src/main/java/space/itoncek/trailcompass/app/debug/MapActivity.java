@@ -22,6 +22,7 @@ import org.mapsforge.map.rendertheme.internal.MapsforgeThemes;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Objects;
 
 import space.itoncek.trailcompass.app.R;
 
@@ -51,7 +52,7 @@ public class MapActivity extends AppCompatActivity {
             mapView.getMapScaleBar().setVisible(true);
             mapView.setBuiltInZoomControls(true);
 
-            Parameters.NUMBER_OF_THREADS = 8;
+            Parameters.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() + 1;
             Parameters.PARENT_TILES_RENDERING = Parameters.ParentTilesRendering.SPEED;
 
             TileCache tileCache = AndroidUtil.createTileCache(this, "mapcache",
@@ -59,7 +60,7 @@ public class MapActivity extends AppCompatActivity {
                     mapView.getModel().frameBufferModel.getOverdrawFactor());
 
             FileInputStream fis = (FileInputStream) getContentResolver().openInputStream(uri);
-            MapDataStore mapDataStore = new MapFile(fis);
+            MapDataStore mapDataStore = new MapFile(Objects.requireNonNull(fis));
             TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapDataStore,
                     mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
             tileRendererLayer.setXmlRenderTheme(MapsforgeThemes.OSMARENDER);

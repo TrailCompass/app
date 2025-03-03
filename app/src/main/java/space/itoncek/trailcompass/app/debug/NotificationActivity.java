@@ -81,25 +81,23 @@ public class NotificationActivity extends AppCompatActivity {
         NotificationManager notificationManager = getSystemService(NotificationManager.class);
         notificationManager.createNotificationChannel(channel);
 
-        runOnUiThread(()-> {
-            findViewById(R.id.button).setOnClickListener((v)-> {
-                NotificationCompat.Builder notif = new NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.icon_foreground)
-                        .setContentTitle("TestNotification")
-                        .setContentText("TestNotificationContent")
-                        .setLights(Color.argb(255,0,0,255),200,200)
-                        .setColor(Color.rgb(13,28,54))
-                        .setColorized(true)
-                        .setPriority(NotificationCompat.PRIORITY_HIGH);
+        runOnUiThread(()-> findViewById(R.id.button).setOnClickListener((v)-> {
+            NotificationCompat.Builder notif = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.icon_foreground)
+                    .setContentTitle("TestNotification")
+                    .setContentText("TestNotificationContent")
+                    .setLights(Color.argb(255,0,0,255),200,200)
+                    .setColor(Color.rgb(13,28,54))
+                    .setColorized(true)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-                    // notificationId is a unique int for each notification that you must define.
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                    checkPerms();
-                    return;
-                }
-                NotificationManagerCompat.from(this).notify(new Random().nextInt(), notif.build());
+                // notificationId is a unique int for each notification that you must define.
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                checkPerms();
+                return;
+            }
+            NotificationManagerCompat.from(this).notify(new Random().nextInt(), notif.build());
 
-            });
-        });
+        }));
     }
 }

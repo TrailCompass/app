@@ -1,7 +1,6 @@
 package space.itoncek.trailcompass.app.hideandseek.ui;
 
 import static android.view.View.GONE;
-import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 import static space.itoncek.trailcompass.app.utils.RunnableUtils.runOnBackgroundThread;
@@ -20,10 +19,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,6 +39,10 @@ import space.itoncek.trailcompass.client.api.HideAndSeekAPI;
 public class AwaitStartActivity extends AppCompatActivity {
     private HideAndSeekAPI api;
     private Context c;
+    private ZonedDateTime gameStartTime;
+    private final ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+    private boolean showTimer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,8 +57,28 @@ public class AwaitStartActivity extends AppCompatActivity {
         api = new HideAndSeekAPIFactory(getFilesDir()).generateHideAndSeekAPI();
 
         findViewById(R.id.await_refresh).setOnClickListener(v->runOnBackgroundThread(this::updateAppDisplay));
-
+        runOnBackgroundThread(this::startWebsocketLoop);
         runOnBackgroundThread(this::updateAppDisplay);
+
+        ses.scheduleWithFixedDelay(this::updateTime, 0,250,TimeUnit.MILLISECONDS);
+    }
+
+    private void updateTime() {
+        if(!showTimer) return;
+
+        if(Duration.between(ZonedDateTime.now(),gameStartTime).isNegative()) {
+            Intent i = new Intent(c, MapView.class);
+            startActivity(i);
+            finish();
+            ses.shutdown();
+        }
+
+        String duration = DurationFormatUtils.formatDurationWords(Duration.between(ZonedDateTime.now(), gameStartTime).toMillis(), true, false);
+        runOnUiThread(()-> ((TextView)findViewById(R.id.await_subtitle)).setText(String.format(getString(R.string.await_subtitle_waiting),duration)));
+    }
+
+    private void startWebsocketLoop() {
+        api.startWebsocketLoop(this::updateAppDisplay);
     }
 
     private void loadMeta() {
@@ -61,12 +86,17 @@ public class AwaitStartActivity extends AppCompatActivity {
             try {
                 if(api.amIAdmin()) {
                     JSONObject hider = api.getCurrentHider();
-                    String name = hider.getString("name");
+                    String name;
+                    if (hider != null) {
+                        name = hider.getString("name");
+                    } else {
+                        name = "<not selected>";
+                    }
                     runOnUiThread(()-> ((TextView)findViewById(R.id.await_admin_current_hider))
                             .setText(String.format(getResources().getString(R.string.await_admin_current_hider),name)));
                     runOnUiThread(()-> findViewById(R.id.await_admin_card).setVisibility(VISIBLE));
                     runOnUiThread(()-> {
-                        findViewById(R.id.await_switch).setOnClickListener(this::switchHider);
+                        findViewById(R.id.await_switch).setOnClickListener(v1 -> switchHider());
                         findViewById(R.id.await_start).setOnClickListener(this::startGame);
                         findViewById(R.id.await_setup).setOnClickListener(v-> {
                             Intent i = new Intent(v.getContext(), ConfiguratorActivity.class);
@@ -87,18 +117,14 @@ public class AwaitStartActivity extends AppCompatActivity {
             try {
                 JSONObject hider = api.getCurrentHider();
                 if(hider == null) {
-                    runOnUiThread(()-> {
-                        Toast.makeText(v.getContext(), "You have not selected a hider!", Toast.LENGTH_SHORT).show();
-                    });
+                    runOnUiThread(()-> Toast.makeText(v.getContext(), "You have not selected a hider!", Toast.LENGTH_SHORT).show());
                     return;
                 }
 
                 if (api.startGame()) {
                     updateAppDisplay();
                 } else {
-                    runOnUiThread(()-> {
-                        Toast.makeText(v.getContext(), "Unable to start this game!", Toast.LENGTH_SHORT).show();
-                    });
+                    runOnUiThread(()-> Toast.makeText(v.getContext(), "Unable to start this game!", Toast.LENGTH_SHORT).show());
                 }
             } catch (IOException e) {
                 Log.e(AwaitStartActivity.class.getName(),"Unable to start the game!",e);
@@ -106,7 +132,7 @@ public class AwaitStartActivity extends AppCompatActivity {
         });
     }
 
-    private void switchHider(View v) {
+    private void switchHider() {
         runOnBackgroundThread(()-> {
             try {
                 if (!api.cycleHider()) {
@@ -130,12 +156,12 @@ public class AwaitStartActivity extends AppCompatActivity {
                 ((TextView)findViewById(R.id.await_subtitle)).setText(R.string.generic_loading);
             });
             GameState newState = api.getGameState();
+            showTimer = false;
             switch (newState) {
                 case SETUP -> runOnUiThread(()-> {
                     ((TextView)findViewById(R.id.await_title)).setText(R.string.await_title_setup);
                     ((TextView)findViewById(R.id.await_subtitle)).setText(R.string.await_subtitle_setup);
                     runOnUiThread(()-> findViewById(R.id.await_refresh).setVisibility(VISIBLE));
-                    runOnUiThread(()-> findViewById(R.id.await_admin_card).setVisibility(VISIBLE));
                     loadMeta();
                 });
                 case INGAME,MOVE_PERIOD -> {
@@ -144,12 +170,21 @@ public class AwaitStartActivity extends AppCompatActivity {
                     finish();
                 }
                 case OUTSIDE_OF_GAME -> {
-                    ZonedDateTime datetime = api.getGameStartTime();
+                    gameStartTime = api.getGameStartTime();
+                    showTimer = true;
+                    runOnUiThread(()-> ((TextView)findViewById(R.id.await_title)).setText(R.string.await_title_waiting));
                     runOnUiThread(()-> findViewById(R.id.await_refresh).setVisibility(VISIBLE));
+                    loadMeta();
                 }
             }
         } catch (IOException e) {
             Log.e(AwaitStartActivity.class.getName(),"Unable to get game state from the server!",e);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        runOnBackgroundThread(api::stopWebsocketLoop);
+        super.onDestroy();
     }
 }

@@ -23,7 +23,7 @@
     <string name="login_checking_map_hash">Checking map hash!</string>
     <string name="login_map_update_needed">Map update needed!</string>
     <string name="login_map_download_progress">Map download {0}%</string>
-    <string name="generic_loading">Loading...</string>
+    <string name="generic_loading">Loading…</string>
     <string name="acsbl_btn_reload">Reload all the meta on this page</string>
     <string name="await_title_setup">Awaiting Start</string>
     <string name="await_subtitle_setup">Waiting for an admin to start this game!</string>
@@ -32,9 +32,18 @@
     <string name="await_start_game">Start game</string>
     <string name="await_switch_hider">Switch hider</string>
     <string name="await_setup">Setup</string>
-
-    <string-array name="gamemodes">
-        <item>Hide and seek</item>
-        <item>Debug</item>
-    </string-array>
+    <string name="await_title_waiting">Waiting for start…</string>
+    <string name="await_subtitle_waiting">The game will start in \n %s</string>
+    <string name="debug_notif_label" translatable="false">Press to see a notification</string>
+    <string name="debug_notif_button" translatable="false">Send notification</string>
+    <string name="debug_main_title" translatable="false">Debug mode active!</string>
+    <string name="debug_main_map" translatable="false">Map</string>
+    <string name="debug_main_qr" translatable="false">QR</string>
+    <string name="debug_main_notif" translatable="false">Notif</string>
+    <string name="await_btn_reload">Reload</string>
+    <string name="debug_fragment_enter" translatable="false">Enter Debug Mode</string>
+    <string name="hideandseek_fragment_url">Server URL</string>
+    <string name="hideandseek_fragment_username">Username</string>
+    <string name="hideandseek_fragment_password">Password</string>
+    <string name="hideandseek_fragment_btn_login">Login</string>
 </resources>

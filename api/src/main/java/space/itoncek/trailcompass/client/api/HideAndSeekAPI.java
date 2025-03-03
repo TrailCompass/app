@@ -1,12 +1,11 @@
 package space.itoncek.trailcompass.client.api;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
@@ -15,11 +14,16 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
 
+@SuppressWarnings("unused")
 public abstract class HideAndSeekAPI {
     public static final MediaType JSON = MediaType.get("application/json");
 
-    OkHttpClient client = new OkHttpClient();
+    final OkHttpClient client = new OkHttpClient();
+    private WebSocket ws;
 
     public abstract HideAndSeekConfig getConfig();
     public abstract void saveConfig(HideAndSeekConfig cfg);
@@ -204,6 +208,57 @@ public abstract class HideAndSeekAPI {
             }
         } else {
             return response;
+        }
+    }
+
+    public void startWebsocketLoop(Runnable runnable) {
+        Request request = new Request.Builder().url(getConfig().base_url.replace("http://" , "ws://") + "/gamemanager/await").build();
+        AwaitWebsocketClient listener = new AwaitWebsocketClient() {
+            @Override
+            public void update() {
+                runnable.run();
+            }
+        };
+        ws = client.newWebSocket(request, listener);
+        ws.send("logon");
+    }
+
+    public void stopWebsocketLoop() {
+        ws.close(1000,"Shutdown");
+    }
+
+    public static abstract class AwaitWebsocketClient extends WebSocketListener {
+        private static final int NORMAL_CLOSURE_STATUS = 1000;
+
+        public abstract void update();
+
+        @Override
+        public void onOpen(@NotNull WebSocket webSocket, @NotNull Response response) {
+            System.out.println("open");
+        }
+
+        @Override
+        public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
+            System.out.println("update");
+            update();
+        }
+
+        @Override
+        public void onMessage(@NotNull WebSocket webSocket, @NotNull ByteString bytes) {
+            System.out.println("update");
+            update();
+        }
+
+        @Override
+        public void onClosing(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
+            webSocket.close(NORMAL_CLOSURE_STATUS, null);
+            System.out.println("Closing : " + code + " / " + reason);
+        }
+
+        @SuppressWarnings("CallToPrintStackTrace")
+        @Override
+        public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, Response response) {
+            t.printStackTrace();
         }
     }
 }

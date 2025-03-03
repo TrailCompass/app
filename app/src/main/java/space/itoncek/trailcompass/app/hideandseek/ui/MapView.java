@@ -65,6 +65,7 @@ public class MapView extends AppCompatActivity {
         });
     }
 
+    // TODO)) Create timer handler!
     private void setupTimer() {
 
     }
@@ -73,9 +74,7 @@ public class MapView extends AppCompatActivity {
         Thread t = new Thread(()-> {
             try {
                 String name = api.myName();
-                runOnUiThread(()-> {
-                    ((TextView)findViewById(R.id.map_username)).setText(name);
-                });
+                runOnUiThread(()-> ((TextView)findViewById(R.id.map_username)).setText(name));
             } catch (IOException e) {
                 Log.e(MapView.class.getName(), "Unable to contact the main server", e);
             }

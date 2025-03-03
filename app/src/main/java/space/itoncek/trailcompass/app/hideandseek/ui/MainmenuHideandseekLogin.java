@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +17,7 @@ import android.widget.TextView;
 
 import java.nio.charset.Charset;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantLock;
 
 import space.itoncek.trailcompass.app.R;
 import space.itoncek.trailcompass.app.hideandseek.api.HideAndSeekAPIFactory;
@@ -28,29 +25,10 @@ import space.itoncek.trailcompass.client.api.HideAndSeekAPI;
 import space.itoncek.trailcompass.client.api.HideAndSeekConfig;
 import space.itoncek.trailcompass.client.api.ServerValidity;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MainmenuHideandseekLogin#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MainmenuHideandseekLogin extends Fragment {
 
     public MainmenuHideandseekLogin() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainmenuHideandseekLogin.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MainmenuHideandseekLogin newInstance(String param1, String param2) {
-        MainmenuHideandseekLogin fragment = new MainmenuHideandseekLogin();
-        return fragment;
     }
 
     @Override
@@ -103,9 +81,7 @@ public class MainmenuHideandseekLogin extends Fragment {
             public void afterTextChanged(Editable s) {
                 HideAndSeekConfig c = api.getConfig();
 
-                getActivity().runOnUiThread(() -> {
-                    c.base_url = ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText().toString();
-                });
+                requireActivity().runOnUiThread(() -> c.base_url = ((EditText) v.findViewById(R.id.hideandseek_fragment_server_url)).getText().toString());
                 api.saveConfig(c);
 
                 Thread t = new Thread(() -> {
@@ -114,10 +90,9 @@ public class MainmenuHideandseekLogin extends Fragment {
                     try {
                         serverValidity.set(api.checkValidity());
                     } catch (Exception e) {
-                        Log.v(MainmenuHideandseekLogin.class.getName(), "Unable to contact the server",e);
                         serverValidity.set(ServerValidity.NOT_FOUND);
                     }
-                    getActivity().runOnUiThread(() -> {
+                    requireActivity().runOnUiThread(() -> {
                         int textID;
                         if (Objects.requireNonNull(serverValidity.get()) == ServerValidity.NOT_FOUND) {
                             textID = R.string.fragment_status_unknown;

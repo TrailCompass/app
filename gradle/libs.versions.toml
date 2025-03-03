@@ -1,12 +1,13 @@
 [versions]
 agp = "8.8.2"
 barcodescannerview = "1.6.0"
+commonsCodec = "1.16.0"
 commonsCollections4 = "4.4"
 commonsCompress = "1.22"
 commonsIo = "2.16.1"
 commonsLang3 = "3.14.0"
 commonsText = "1.9"
-firebaseBom = "33.9.0"
+firebaseBom = "33.10.0"
 json = "20240303"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -21,6 +22,7 @@ okhttp = "4.12.0"
 
 [libraries]
 barcodescannerview = { module = "com.github.markusfisch:BarcodeScannerView", version.ref = "barcodescannerview" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "commonsCodec" }
 commons-collections4 = { module = "org.apache.commons:commons-collections4", version.ref = "commonsCollections4" }
 commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commonsCompress" }
 commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }

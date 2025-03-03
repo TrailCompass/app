@@ -54,7 +54,7 @@ dependencies {
     implementation libs.firebase.crashlytics
     implementation libs.firebase.perf
     implementation project(':api')
-    implementation 'commons-codec:commons-codec:1.16.0'
+    implementation libs.commons.codec
     //tests
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

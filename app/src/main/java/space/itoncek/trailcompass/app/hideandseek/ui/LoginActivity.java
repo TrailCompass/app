@@ -1,7 +1,6 @@
 package space.itoncek.trailcompass.app.hideandseek.ui;
 
-import static com.google.common.hash.Hashing.sha256;
-import static com.google.common.hash.Hashing.sha512;
+import static space.itoncek.trailcompass.app.utils.RunnableUtils.runOnBackgroundThread;
 import static space.itoncek.trailcompass.client.api.LoginResponse.UNABLE_TO_CONNECT;
 
 import android.content.Intent;
@@ -28,7 +27,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -71,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                 login.set(api.login());
             } catch (IOException | JSONException e) {
                 Log.e(LoginActivity.class.getName(), getResources().getText(R.string.login_unable_to_connect).toString(), e);
-                Toast.makeText(this, getResources().getText(R.string.login_unable_to_connect), Toast.LENGTH_LONG).show();
+                runOnBackgroundThread(()->Toast.makeText(this, getResources().getText(R.string.login_unable_to_connect), Toast.LENGTH_LONG).show());
                 login.set(UNABLE_TO_CONNECT);
             }
             cdl.countDown();
@@ -113,15 +111,21 @@ public class LoginActivity extends AppCompatActivity {
         // execute this when the downloader must be fired
         Thread t = new Thread(() -> {
             AtomicBoolean isCanceled = new AtomicBoolean(false);
-            findViewById(R.id.loading_cancel).setOnClickListener((c) -> isCanceled.set(true));
             try {
                 HideAndSeekConfig c = api.getConfig();
 
-                runOnUiThread(()->mProgressLabel.setText(R.string.login_checking_map_hash));
+                runOnUiThread(()-> {
+                    mProgressLabel.setText(R.string.login_checking_map_hash);
+                    mProgressBar.setIndeterminate(false);
+                });
                 String str = api.getMapHash();
-                String localFileHex = DigestUtils.sha256Hex(new FileInputStream(mapfile));
 
-                if (!str.equals(localFileHex) || !mapfile.exists()) {
+                String localFileHex = "";
+                if(mapfile.exists()) {
+                    localFileHex = DigestUtils.sha256Hex(new FileInputStream(mapfile));
+                }
+
+                if (!str.equals(localFileHex)) {
                     api.saveConfig(c);
                     runOnUiThread(()->mProgressLabel.setText(R.string.login_map_update_needed));
                     InputStream input = null;
@@ -162,9 +166,8 @@ public class LoginActivity extends AppCompatActivity {
                             {
                                 int finalTotal = (int) total;
                                 runOnUiThread(()-> {
-                                    mProgressBar.setIndeterminate(false);
-                                    mProgressBar.setProgress((int) (100*((float)finalTotal/fileLength)),true);
-                                    mProgressBar.setMax(100);
+                                    mProgressBar.setProgress((int) (1000*((float)finalTotal/fileLength)),false);
+                                    mProgressBar.setMax(1000);
 
                                     mProgressLabel.setText(MessageFormat.format(getString(R.string.login_map_download_progress), (int) (100 * ((float) finalTotal / fileLength))));
                                 });
