@@ -1,4 +1,4 @@
-package space.itoncek.trailcompass.app.hideandseek.ui;
+package space.itoncek.trailcompass.app.hideandseek.generic_ui;
 
 import static space.itoncek.trailcompass.app.utils.RunnableUtils.runOnBackgroundThread;
 import static space.itoncek.trailcompass.client.api.LoginResponse.UNABLE_TO_CONNECT;
@@ -63,18 +63,17 @@ public class LoginActivity extends AppCompatActivity {
 
         CountDownLatch cdl = new CountDownLatch(1);
         AtomicReference<LoginResponse> login = new AtomicReference<>();
-        Thread t = new Thread(() -> {
+        runOnBackgroundThread(() -> {
             runOnUiThread(()->mProgressLabel.setText(String.format(getString(R.string.login_started) , api.getConfig().username)));
             try {
                 login.set(api.login());
             } catch (IOException | JSONException e) {
                 Log.e(LoginActivity.class.getName(), getResources().getText(R.string.login_unable_to_connect).toString(), e);
-                runOnBackgroundThread(()->Toast.makeText(this, getResources().getText(R.string.login_unable_to_connect), Toast.LENGTH_LONG).show());
+                runOnUiThread(()->Toast.makeText(this, getResources().getText(R.string.login_unable_to_connect), Toast.LENGTH_LONG).show());
                 login.set(UNABLE_TO_CONNECT);
             }
             cdl.countDown();
         });
-        t.start();
 
         try {
             cdl.await();
@@ -82,7 +81,6 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(LoginActivity.class.getName(), "Interrupted", e);
         }
 
-        Toast.makeText(this, login.get().name(), Toast.LENGTH_SHORT).show();
         switch (login.get()) {
             case UNABLE_TO_CONNECT -> {
                 runOnUiThread(()->mProgressLabel.setText(R.string.login_unable_to_connect));

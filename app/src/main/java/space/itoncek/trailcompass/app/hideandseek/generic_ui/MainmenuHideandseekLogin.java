@@ -1,4 +1,4 @@
-package space.itoncek.trailcompass.app.hideandseek.ui;
+package space.itoncek.trailcompass.app.hideandseek.generic_ui;
 
 import static com.google.common.hash.Hashing.sha512;
 

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/Base.Theme.TrailCompass"
-    tools:context=".hideandseek.ui.MainmenuHideandseekLogin">
+    tools:context=".hideandseek.generic_ui.MainmenuHideandseekLogin">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

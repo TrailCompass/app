@@ -23,6 +23,16 @@ public class HideAndSeekAPIFactory {
     public HideAndSeekAPI generateHideAndSeekAPI() {
         return new HideAndSeekAPI() {
             @Override
+            public void sendLogMessage(String message) {
+                Log.d("HideAndSeekApi",message);
+            }
+
+            @Override
+            public void sendExceptionMessage(String message, Throwable t) {
+                Log.w("HideAndSeekApi",message,t);
+            }
+
+            @Override
             public @Nullable HideAndSeekConfig getConfig() {
                 File cfile = new File(filesDir + "/config.dat");
                 if(cfile.exists()) {

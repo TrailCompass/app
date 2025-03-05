@@ -1,4 +1,4 @@
-package space.itoncek.trailcompass.app.hideandseek.ui;
+package space.itoncek.trailcompass.app.hideandseek.generic_ui;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import space.itoncek.trailcompass.app.R;
 import space.itoncek.trailcompass.app.hideandseek.api.HideAndSeekAPIFactory;
 import space.itoncek.trailcompass.app.hideandseek.configurator.ConfiguratorActivity;
+import space.itoncek.trailcompass.app.hideandseek.seeker_ui.SeekerMapView;
 import space.itoncek.trailcompass.client.api.GameState;
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI;
 
@@ -67,7 +68,7 @@ public class AwaitStartActivity extends AppCompatActivity {
         if(!showTimer) return;
 
         if(Duration.between(ZonedDateTime.now(),gameStartTime).isNegative()) {
-            Intent i = new Intent(c, MapView.class);
+            Intent i = new Intent(c, SeekerMapView.class);
             startActivity(i);
             finish();
             ses.shutdown();
@@ -165,7 +166,7 @@ public class AwaitStartActivity extends AppCompatActivity {
                     loadMeta();
                 });
                 case INGAME,MOVE_PERIOD -> {
-                    Intent i = new Intent(c, MapView.class);
+                    Intent i = new Intent(c, SeekerMapView.class);
                     startActivity(i);
                     finish();
                 }

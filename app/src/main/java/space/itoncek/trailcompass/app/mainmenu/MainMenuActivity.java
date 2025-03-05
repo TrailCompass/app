@@ -22,7 +22,7 @@ import androidx.fragment.app.FragmentContainerView;
 
 import space.itoncek.trailcompass.app.R;
 import space.itoncek.trailcompass.app.debug.MainmenuDebug;
-import space.itoncek.trailcompass.app.hideandseek.ui.MainmenuHideandseekLogin;
+import space.itoncek.trailcompass.app.hideandseek.generic_ui.MainmenuHideandseekLogin;
 
 public class MainMenuActivity extends AppCompatActivity {
 

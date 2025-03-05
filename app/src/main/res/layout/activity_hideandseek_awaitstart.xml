@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/design_shadow"
-    tools:context=".hideandseek.ui.AwaitStartActivity">
+    tools:context=".hideandseek.generic_ui.AwaitStartActivity">
 
     <TextView
         android:id="@+id/await_title"

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/design_shadow"
-    tools:context=".hideandseek.ui.LoginActivity">
+    tools:context=".hideandseek.generic_ui.LoginActivity">
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"

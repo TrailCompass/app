@@ -1,8 +1,11 @@
-package space.itoncek.trailcompass.app.hideandseek.ui;
+package space.itoncek.trailcompass.app.hideandseek.hider_ui;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+import static space.itoncek.trailcompass.app.utils.RunnableUtils.runOnBackgroundThread;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
@@ -24,12 +27,15 @@ import org.mapsforge.map.rendertheme.internal.MapsforgeThemes;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import space.itoncek.trailcompass.app.R;
 import space.itoncek.trailcompass.app.hideandseek.api.HideAndSeekAPIFactory;
+import space.itoncek.trailcompass.app.hideandseek.seeker_ui.SeekerMapView;
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI;
 
-public class MapView extends AppCompatActivity {
+public class HiderMapView extends AppCompatActivity {
     private HideAndSeekAPI api;
     private org.mapsforge.map.android.view.MapView mapView;
     File mapfile;
@@ -38,7 +44,7 @@ public class MapView extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_seek_mapview);
+        setContentView(R.layout.activity_hide_mapview);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -50,11 +56,36 @@ public class MapView extends AppCompatActivity {
         mapView = findViewById(R.id.map_mapview);
         api = new HideAndSeekAPIFactory(getFilesDir()).generateHideAndSeekAPI();
 
-        showAdminView();
-        setUsername();
-        setupTimer();
-        setupButtons();
-        openMap();
+        if(amIHider()) {
+            showAdminView();
+            setUsername();
+            setupTimer();
+            setupButtons();
+            openMap();
+        } else {
+            Intent i = new Intent(this, SeekerMapView.class);
+            startActivity(i);
+            finish();
+        }
+    }
+
+    private boolean amIHider() {
+        AtomicBoolean result = new AtomicBoolean(false);
+        CountDownLatch cdl = new CountDownLatch(1);
+        runOnBackgroundThread(()-> {
+            try {
+                result.set(api.amIHider());
+                cdl.countDown();
+            } catch (IOException e) {
+                Log.e(HiderMapView.class.getName(),"Unable to determine if I'm a hider or not",e);
+            }
+        });
+        try {
+            cdl.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return result.get();
     }
 
     private void setupButtons() {
@@ -76,7 +107,7 @@ public class MapView extends AppCompatActivity {
                 String name = api.myName();
                 runOnUiThread(()-> ((TextView)findViewById(R.id.map_username)).setText(name));
             } catch (IOException e) {
-                Log.e(MapView.class.getName(), "Unable to contact the main server", e);
+                Log.e(HiderMapView.class.getName(), "Unable to contact the main server", e);
             }
         });
         t.start();
@@ -91,7 +122,7 @@ public class MapView extends AppCompatActivity {
                     runOnUiThread(()->findViewById(R.id.map_switchToSettings).setVisibility(GONE));
                 }
             } catch (IOException e) {
-                Log.e(MapView.class.getName(), "Unable to contact the main server", e);
+                Log.e(HiderMapView.class.getName(), "Unable to contact the main server", e);
             }
         });
         t.start();

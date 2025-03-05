@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -25,13 +27,19 @@ public abstract class HideAndSeekAPI {
     final OkHttpClient client = new OkHttpClient();
     private WebSocket ws;
 
+    public HideAndSeekAPI() {
+        Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.FINE);
+    }
+
+    public abstract void sendLogMessage(String message);
+    public abstract void sendExceptionMessage(String message, Throwable t);
     public abstract HideAndSeekConfig getConfig();
     public abstract void saveConfig(HideAndSeekConfig cfg);
 
     public ServerValidity checkValidity() throws IOException {
         Response response = get(getConfig().base_url + "/");
-        boolean successful = response.isSuccessful();
-        if(!successful) return ServerValidity.NOT_FOUND;
+        if(response == null || !response.isSuccessful()) return ServerValidity.NOT_FOUND;
+
         assert response.body() != null;
         String version = response.body().string();
         response.close();
@@ -75,6 +83,7 @@ public abstract class HideAndSeekAPI {
             cfg.jwt_token = new JSONObject(res.body().string()).getString("token");
             saveConfig(cfg);
         } catch (IOException | JSONException e) {
+            sendExceptionMessage("Unable to auth",e);
             return LoginResponse.UNABLE_TO_AUTH;
         }
         res.close();
@@ -92,6 +101,14 @@ public abstract class HideAndSeekAPI {
     public boolean amIAdmin() throws IOException {
         HideAndSeekConfig cfg = getConfig();
         try(Response authd = getAuthd(cfg.base_url + "/uac/amIAdmin")) {
+            assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
+            return Boolean.parseBoolean(authd.body().string());
+        }
+    }
+
+    public boolean amIHider() throws IOException {
+        HideAndSeekConfig cfg = getConfig();
+        try(Response authd = getAuthd(cfg.base_url + "/uac/amIHider")) {
             assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
             return Boolean.parseBoolean(authd.body().string());
         }
@@ -146,15 +163,20 @@ public abstract class HideAndSeekAPI {
         }
     }
 
-    public Response get(String url) throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+    public @Nullable Response get(String url) throws IOException {
+        try {
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
 
-        return client.newCall(request).execute();
+            return client.newCall(request).execute();
+        } catch (IllegalArgumentException e) {
+            sendLogMessage("Unable to parse the URL!");
+            return null;
+        }
     }
 
-    public Response post(String url, String json) throws IOException {
+    public @Nullable Response post(String url, String json) throws IOException {
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
                 .url(url)

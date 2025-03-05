@@ -32,13 +32,16 @@
             android:name=".hideandseek.configurator.ConfiguratorActivity"
             android:exported="false" />
         <activity
-            android:name=".hideandseek.ui.AwaitStartActivity"
+            android:name=".hideandseek.generic_ui.AwaitStartActivity"
             android:exported="false" />
         <activity
-            android:name=".hideandseek.ui.LoginActivity"
+            android:name=".hideandseek.generic_ui.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".hideandseek.ui.MapView"
+            android:name=".hideandseek.seeker_ui.SeekerMapView"
+            android:exported="false" />
+        <activity
+            android:name=".hideandseek.hider_ui.HiderMapView"
             android:exported="false" />
         <activity
             android:name=".mainmenu.MainMenuActivity"
