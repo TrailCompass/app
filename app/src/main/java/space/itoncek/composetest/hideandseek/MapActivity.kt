@@ -49,7 +49,7 @@ class MapActivity : ComponentActivity() {
 fun MapActivityMain() {
     val ctx = LocalContext.current
     val markers = remember { mutableStateMapOf<String, Marker>() }
-
+    val ctxx = Local
     MapsforgeMapView(markers = markers, context = ctx, onMapTap = { position ->
         addMarker(
             "marker_${System.currentTimeMillis()}",
