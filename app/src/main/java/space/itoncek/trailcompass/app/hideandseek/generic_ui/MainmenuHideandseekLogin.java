@@ -92,21 +92,19 @@ public class MainmenuHideandseekLogin extends Fragment {
                     } catch (Exception e) {
                         serverValidity.set(ServerValidity.NOT_FOUND);
                     }
-                    requireActivity().runOnUiThread(() -> {
-                        int textID;
-                        if (Objects.requireNonNull(serverValidity.get()) == ServerValidity.NOT_FOUND) {
-                            textID = R.string.fragment_status_unknown;
-                        } else if (serverValidity.get() == ServerValidity.INCOMPATIBLE_VERSION) {
-                            textID = R.string.fragment_status_incompatible;
-                        } else if (serverValidity.get() == ServerValidity.DEVELOPMENT_VERSION) {
-                            textID = R.string.fragment_status_dev;
-                        } else if (serverValidity.get() == ServerValidity.OK) {
-                            textID = R.string.fragment_status_ok;
-                        } else {
-                            throw new IllegalArgumentException();
-                        }
-                        ((TextView) v.findViewById(R.id.hideandseek_fragment_status)).setText(textID);
-                    });
+                    int textID;
+                    if (Objects.requireNonNull(serverValidity.get()) == ServerValidity.NOT_FOUND) {
+                        textID = R.string.fragment_status_unknown;
+                    } else if (serverValidity.get() == ServerValidity.INCOMPATIBLE_VERSION) {
+                        textID = R.string.fragment_status_incompatible;
+                    } else if (serverValidity.get() == ServerValidity.DEVELOPMENT_VERSION) {
+                        textID = R.string.fragment_status_dev;
+                    } else if (serverValidity.get() == ServerValidity.OK) {
+                        textID = R.string.fragment_status_ok;
+                    } else {
+                        throw new IllegalArgumentException();
+                    }
+                    requireActivity().runOnUiThread(() -> ((TextView) v.findViewById(R.id.hideandseek_fragment_status)).setText(textID));
                 });
 
                 t.start();

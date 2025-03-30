@@ -9,4 +9,8 @@
     <color name="design_blue_black">#2058DD</color>
     <color name="design_red_white">#FDEBEB</color>
     <color name="design_red_black">#E71D1D</color>
+    <color name="marker_blue">#00ADFF</color>
+    <color name="marker_red">#FF1616</color>
+    <color name="marker_green">#9DFF56</color>
+    <color name="marker_orange">#FF7A2F</color>
 </resources>

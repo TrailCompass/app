@@ -2,12 +2,13 @@ package space.itoncek.trailcompass.app.hideandseek.hider_ui;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
-
 import static space.itoncek.trailcompass.app.utils.RunnableUtils.runOnBackgroundThread;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -16,11 +17,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.util.Parameters;
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
 import org.mapsforge.map.android.util.AndroidUtil;
+import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
+import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.internal.MapsforgeThemes;
@@ -33,11 +38,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import space.itoncek.trailcompass.app.R;
 import space.itoncek.trailcompass.app.hideandseek.api.HideAndSeekAPIFactory;
 import space.itoncek.trailcompass.app.hideandseek.seeker_ui.SeekerMapView;
+import space.itoncek.trailcompass.app.utils.MapUtils;
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI;
 
 public class HiderMapView extends AppCompatActivity {
     private HideAndSeekAPI api;
-    private org.mapsforge.map.android.view.MapView mapView;
     File mapfile;
 
     @Override
@@ -53,10 +58,9 @@ public class HiderMapView extends AppCompatActivity {
         AndroidGraphicFactory.createInstance(getApplication());
 
         mapfile = new File(getCacheDir() + "/map.map");
-        mapView = findViewById(R.id.map_mapview);
         api = new HideAndSeekAPIFactory(getFilesDir()).generateHideAndSeekAPI();
 
-        if(amIHider()) {
+        if (amIHider()) {
             showAdminView();
             setUsername();
             setupTimer();
@@ -72,12 +76,12 @@ public class HiderMapView extends AppCompatActivity {
     private boolean amIHider() {
         AtomicBoolean result = new AtomicBoolean(false);
         CountDownLatch cdl = new CountDownLatch(1);
-        runOnBackgroundThread(()-> {
+        runOnBackgroundThread(() -> {
             try {
                 result.set(api.amIHider());
                 cdl.countDown();
             } catch (IOException e) {
-                Log.e(HiderMapView.class.getName(),"Unable to determine if I'm a hider or not",e);
+                Log.e(HiderMapView.class.getName(), "Unable to determine if I'm a hider or not", e);
             }
         });
         try {
@@ -89,7 +93,7 @@ public class HiderMapView extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        findViewById(R.id.map_resetButton).setOnClickListener((c)-> {
+        findViewById(R.id.map_resetButton).setOnClickListener((c) -> {
             setUsername();
             showAdminView();
             setupTimer();
@@ -102,10 +106,10 @@ public class HiderMapView extends AppCompatActivity {
     }
 
     private void setUsername() {
-        Thread t = new Thread(()-> {
+        Thread t = new Thread(() -> {
             try {
                 String name = api.myName();
-                runOnUiThread(()-> ((TextView)findViewById(R.id.map_username)).setText(name));
+                runOnUiThread(() -> ((TextView) findViewById(R.id.map_username)).setText(name));
             } catch (IOException e) {
                 Log.e(HiderMapView.class.getName(), "Unable to contact the main server", e);
             }
@@ -114,12 +118,12 @@ public class HiderMapView extends AppCompatActivity {
     }
 
     private void showAdminView() {
-        Thread t = new Thread(()-> {
+        Thread t = new Thread(() -> {
             try {
                 if (api.amIAdmin()) {
-                    runOnUiThread(()->findViewById(R.id.map_switchToSettings).setVisibility(VISIBLE));
+                    runOnUiThread(() -> findViewById(R.id.map_switchToSettings).setVisibility(VISIBLE));
                 } else {
-                    runOnUiThread(()->findViewById(R.id.map_switchToSettings).setVisibility(GONE));
+                    runOnUiThread(() -> findViewById(R.id.map_switchToSettings).setVisibility(GONE));
                 }
             } catch (IOException e) {
                 Log.e(HiderMapView.class.getName(), "Unable to contact the main server", e);
@@ -129,29 +133,48 @@ public class HiderMapView extends AppCompatActivity {
     }
 
     private void openMap() {
-        mapView.setClickable(true);
-        mapView.getMapScaleBar().setVisible(true);
-        mapView.setBuiltInZoomControls(true);
+        MapView mw = new MapView(this);
+        mw.setClickable(true);
+        mw.getMapScaleBar().setVisible(true);
+        mw.setBuiltInZoomControls(true);
 
         Parameters.NUMBER_OF_THREADS = 8;
         Parameters.ANTI_ALIASING = true;
         Parameters.PARENT_TILES_RENDERING = Parameters.ParentTilesRendering.SPEED;
 
         TileCache tileCache = AndroidUtil.createTileCache(this, "mapcache",
-                mapView.getModel().displayModel.getTileSize(), 1f,
-                mapView.getModel().frameBufferModel.getOverdrawFactor());
+                mw.getModel().displayModel.getTileSize(), 1f,
+                mw.getModel().frameBufferModel.getOverdrawFactor());
 
         MapDataStore mapDataStore = new MapFile(mapfile);
         TileRendererLayer tileRendererLayer = new TileRendererLayer(tileCache, mapDataStore,
-                mapView.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
+                mw.getModel().mapViewPosition, AndroidGraphicFactory.INSTANCE);
         tileRendererLayer.setCacheTileMargin(1);
         tileRendererLayer.setCacheZoomMinus(1);
         tileRendererLayer.setCacheZoomPlus(2);
         tileRendererLayer.setXmlRenderTheme(MapsforgeThemes.OSMARENDER);
 
-        mapView.getLayerManager().getLayers().add(tileRendererLayer);
+        Layers layers = mw.getLayerManager().getLayers();
+        layers.add(tileRendererLayer);
 
-        mapView.setCenter(mapDataStore.startPosition());
-        mapView.setZoomLevel(mapDataStore.startZoomLevel());
+        Marker m1 = MapUtils.createMarker(this, R.drawable.location_marker_blue, new LatLong(50.0835035, 14.4341259));
+        Marker m2 = MapUtils.createMarker(this, R.drawable.location_marker_green, new LatLong(50.0948317, 14.4158918));
+        Marker m3 = MapUtils.createMarker(this, R.drawable.location_marker_red, new LatLong(50.0833949, 14.3950736));
+        Marker m4 = MapUtils.createMarker(this, R.drawable.location_marker_orange, new LatLong(50.0637249, 14.4165013));
+
+        layers.add(m1);
+        layers.add(m2);
+        layers.add(m3);
+        layers.add(m4);
+
+        mw.setCenter(mapDataStore.startPosition());
+        mw.setZoomLevel(mapDataStore.startZoomLevel());
+        View C = findViewById(R.id.map_mapview);
+        ViewGroup parent = (ViewGroup) C.getParent();
+        int index = parent.indexOfChild(C);
+        parent.removeView(C);
+        C = mw;
+        parent.addView(C, index);
+
     }
 }
