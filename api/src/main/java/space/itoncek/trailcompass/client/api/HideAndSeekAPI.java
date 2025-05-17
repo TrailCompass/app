@@ -6,8 +6,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -17,12 +19,30 @@ import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
+import space.itoncek.trailcompass.api.ExchangeHandler;
+import space.itoncek.trailcompass.commons.objects.GameState;
+import space.itoncek.trailcompass.commons.objects.Token;
+import space.itoncek.trailcompass.commons.requests.auth.LoginRequest;
+import space.itoncek.trailcompass.commons.requests.auth.ProfileRequest;
+import space.itoncek.trailcompass.commons.requests.gamemgr.CurrentHiderRequest;
+import space.itoncek.trailcompass.commons.requests.gamemgr.CycleCurrentHiderRequest;
+import space.itoncek.trailcompass.commons.requests.gamemgr.FinishSetupRequest;
+import space.itoncek.trailcompass.commons.requests.gamemgr.GameStateRequest;
+import space.itoncek.trailcompass.commons.requests.gamemgr.StartingTimeRequest;
+import space.itoncek.trailcompass.commons.requests.map.MapHashRequest;
+import space.itoncek.trailcompass.commons.requests.system.ServerTimeRequest;
+import space.itoncek.trailcompass.commons.requests.system.ServerVersionRequest;
+import space.itoncek.trailcompass.commons.responses.generic.OkResponse;
+import space.itoncek.trailcompass.commons.responses.system.ServerTimeResponse;
+import space.itoncek.trailcompass.commons.responses.system.ServerVersionResponse;
+import space.itoncek.trailcompass.commons.utils.BackendException;
 
 @SuppressWarnings("unused")
 public abstract class HideAndSeekAPI {
     public static final MediaType JSON = MediaType.get("application/json");
 
     final OkHttpClient client = new OkHttpClient();
+    private final ExchangeHandler ex;
     private WebSocket ws;
 
     public abstract void sendLogMessage(String message);
@@ -33,209 +53,90 @@ public abstract class HideAndSeekAPI {
 
     public abstract void saveConfig(HideAndSeekConfig cfg);
 
-    public ServerValidity checkValidity() throws IOException {
-        Response response = get(getConfig().base_url + "/");
-        if (response == null || !response.isSuccessful()) return ServerValidity.NOT_FOUND;
-
-        assert response.body() != null;
-        String version = response.body().string();
-        response.close();
-        if (version.equals("vDEVELOPMENT")) return ServerValidity.DEVELOPMENT_VERSION;
-        else
-            return SERVER_VERSIONS.SERVER_VERSION.equals(version) ? ServerValidity.OK : ServerValidity.INCOMPATIBLE_VERSION;
+    public HideAndSeekAPI() {
+        ex = new ExchangeHandler(getConfig().base_url + "/");
     }
 
-    public long getPing() throws IOException {
-        Request request = new Request.Builder()
-                .url(getConfig().base_url + "/time")
-                .build();
+    public ServerValidity checkValidity() throws BackendException {
+        ServerVersionResponse v = ex.system().version(new ServerVersionRequest());
+
+        if (v.ver().equals("vDEVELOPMENT")) return ServerValidity.DEVELOPMENT_VERSION;
+        else
+            return SERVER_VERSIONS.SERVER_VERSION.equals(v.ver()) ? ServerValidity.OK : ServerValidity.INCOMPATIBLE_VERSION;
+    }
+
+    public long getPing() throws IOException, BackendException {
 
         long start = System.currentTimeMillis();
-        Response execute = client.newCall(request).execute();
+        ServerTimeResponse res = ex.system().time(new ServerTimeRequest(start));
         long end = System.currentTimeMillis();
 
-        assert execute.body() != null;
-        long mid = Long.parseLong(execute.body().string());
-        execute.close();
-        return ((mid - start) + (end - mid)) / 2L;
+        return ((res.mid() - res.start()) + (end - res.mid())) / 2L;
     }
 
-    public LoginResponse login() throws IOException, JSONException {
-        HideAndSeekConfig cfg = getConfig();
+    public LoginResponse login() {
+        try {
+            HideAndSeekConfig cfg = getConfig();
 
-        ServerValidity serverValidity = checkValidity();
-        if (serverValidity == ServerValidity.NOT_FOUND) return LoginResponse.UNABLE_TO_CONNECT;
-        if (serverValidity.equals(ServerValidity.INCOMPATIBLE_VERSION))
-            return LoginResponse.INCOMPATIBLE_BACKEND;
+            ServerValidity serverValidity = checkValidity();
+            if (serverValidity == ServerValidity.NOT_FOUND) return LoginResponse.UNABLE_TO_CONNECT;
+            if (serverValidity.equals(ServerValidity.INCOMPATIBLE_VERSION))
+                return LoginResponse.INCOMPATIBLE_BACKEND;
 
-        String req = new JSONObject()
-                .put("username", cfg.username)
-                .put("passwordhash", cfg.password_hash)
-                .toString(4);
+            space.itoncek.trailcompass.commons.responses.auth.LoginResponse res = ex.auth().login(new LoginRequest(cfg.username, cfg.password_hash.getBytes(StandardCharsets.UTF_8)));
 
-        Response res = post(cfg.base_url + "/uac/login", req);
-
-        try (res) {
-            if (!res.isSuccessful()) return LoginResponse.UNABLE_TO_AUTH;
-            assert res.body() != null;
-            cfg.jwt_token = new JSONObject(res.body().string()).getString("token");
+            cfg.jwt_token = res.token();
             saveConfig(cfg);
-        } catch (IOException | JSONException e) {
+        } catch (BackendException e) {
             sendExceptionMessage("Unable to auth", e);
             return LoginResponse.UNABLE_TO_AUTH;
         }
         return LoginResponse.OK;
     }
 
-    public String getMapHash() throws IOException {
+    public String getMapHash() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
-        try (Response authd = getAuthd(cfg.base_url + "/mapserver/getServerMapHash")) {
-            assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
-            return authd.body().string();
-        }
+        return ex.map().getMapHash(new MapHashRequest(getToken(cfg))).sha256();
     }
 
-    public String getMapTheme() throws IOException {
+    private Token getToken(HideAndSeekConfig cfg) {
+        return new Token(cfg.jwt_token);
+    }
+
+    public boolean amIAdmin() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
-        try (Response authd = getAuthd(cfg.base_url + "/mapserver/getServerMapTheme")) {
-            assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
-            return authd.body().string();
-        }
+        return ex.auth().getProfile(new ProfileRequest(getToken(cfg))).p().admin();
     }
 
-    public boolean amIAdmin() throws IOException {
+    public @Nullable String myName() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
-        try (Response authd = getAuthd(cfg.base_url + "/uac/amIAdmin")) {
-            assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
-            return Boolean.parseBoolean(authd.body().string());
-        }
+        return ex.auth().getProfile(new ProfileRequest(getToken(cfg))).p().nickname();
     }
 
-    public boolean amIHider() throws IOException {
+    public @Nullable UUID getCurrentHider() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
-        try (Response authd = getAuthd(cfg.base_url + "/uac/amIHider")) {
-            assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
-            return Boolean.parseBoolean(authd.body().string());
-        }
+
+        return ex.gameMgr().getCurrentHider(new CurrentHiderRequest(getToken(cfg))).id();
     }
 
-    public @Nullable String myName() throws IOException {
+    public GameState getGameState() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
-        try (Response authd = getAuthd(cfg.base_url + "/uac/myName")) {
-            assert (authd != null ? authd.body() : null) != null && authd.isSuccessful();
-            return authd.body().string();
-        }
+        return ex.gameMgr().getGameState(new GameStateRequest(getToken(cfg))).state();
     }
 
-
-    public @Nullable JSONObject getCurrentHider() throws IOException {
+    public boolean startGame() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
-        try (Response res = getAuthd(cfg.base_url + "/gamemanager/currentHider")) {
-            if ((res != null ? res.body() : null) == null || !res.isSuccessful()) return null;
-            return new JSONObject(res.body().string());
-        }
+        return ex.gameMgr().finishSetup(new FinishSetupRequest(getToken(cfg))).equals(new OkResponse());
     }
 
-    public GameState getGameState() throws IOException {
+    public ZonedDateTime getGameStartTime() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
-        try (Response res = getAuthd(cfg.base_url + "/gamemanager/gameState")) {
-            assert (res != null ? res.body() : null) != null && res.isSuccessful();
-            return GameState.valueOf(res.body().string());
-        }
+        return ex.gameMgr().getStartingTime(new StartingTimeRequest(getToken(cfg))).dateTime();
     }
 
-    public boolean startGame() throws IOException {
+    public boolean cycleHider() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
-        try (Response res = postAuthd(cfg.base_url + "/gamemanager/finishSetup", "{}")) {
-            assert (res != null ? res.body() : null) != null;
-            return res.isSuccessful();
-        }
-    }
-
-    public ZonedDateTime getGameStartTime() throws IOException {
-        HideAndSeekConfig cfg = getConfig();
-        try (Response res = getAuthd(cfg.base_url + "/gamemanager/startTime")) {
-            assert (res != null ? res.body() : null) != null && res.isSuccessful();
-            return ZonedDateTime.parse(res.body().string());
-        }
-    }
-
-    public boolean cycleHider() throws IOException {
-        HideAndSeekConfig cfg = getConfig();
-        try (Response res = postAuthd(cfg.base_url + "/gamemanager/cycleHider", "{}")) {
-            assert (res != null ? res.body() : null) != null;
-            return res.isSuccessful();
-        }
-    }
-
-    public @Nullable Response get(String url) throws IOException {
-        try {
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
-
-            return client.newCall(request).execute();
-        } catch (IllegalArgumentException e) {
-            sendLogMessage("Unable to parse the URL!");
-            return null;
-        }
-    }
-
-    public @Nullable Response post(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(json, JSON);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
-
-        return client.newCall(request).execute();
-    }
-
-    public @Nullable Response postAuthd(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(json, JSON);
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + getConfig().jwt_token)
-                .post(body)
-                .build();
-
-        Response response = client.newCall(request).execute();
-
-        if (response.code() == 418) {
-            try {
-                if (Objects.requireNonNull(login()) == LoginResponse.OK) {
-                    return getAuthd(url);
-                }
-                return null;
-            } catch (JSONException e) {
-                return null;
-            }
-        } else {
-            return response;
-        }
-    }
-
-    public @Nullable Response getAuthd(String url) throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + getConfig().jwt_token)
-                .build();
-
-        Response response = client.newCall(request).execute();
-
-        if (response.code() == 418) {
-            System.out.println("Refreshing tokens!");
-            try {
-                if (Objects.requireNonNull(login()) == LoginResponse.OK) {
-                    return getAuthd(url);
-                }
-                return null;
-            } catch (JSONException e) {
-                return null;
-            }
-        } else {
-            return response;
-        }
+        return ex.gameMgr().cycleCurrentHider(new CycleCurrentHiderRequest(getToken(cfg))).equals(new OkResponse());
     }
 
     public void startWebsocketLoop(Runnable runnable) {

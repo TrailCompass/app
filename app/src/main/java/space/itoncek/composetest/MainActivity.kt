@@ -1,12 +1,14 @@
 package space.itoncek.composetest
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,9 +35,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +48,6 @@ import space.itoncek.composetest.debug.DebugActivity
 import space.itoncek.composetest.hideandseek.LoginActivity
 import space.itoncek.composetest.ui.theme.ComposeTestTheme
 import space.itoncek.composetest.ui.theme.DesignFg
-import space.itoncek.composetest.ui.theme.DesignShadow
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI
 import space.itoncek.trailcompass.client.api.ServerValidity
 import kotlin.concurrent.thread
@@ -74,7 +76,7 @@ fun MainUI() {
     Column(
         modifier = Modifier
             .fillMaxSize(1f)
-            .background(DesignShadow)
+            .background(MaterialTheme.colorScheme.background)
             .padding(8.dp)
     ) {
         Card(
@@ -82,16 +84,23 @@ fun MainUI() {
                 .padding(8.dp)
                 .fillMaxWidth(1f)
                 .wrapContentHeight(),
-            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.design_bg)),
             elevation = CardDefaults.elevatedCardElevation(8.dp)
         ) {
-            Image(
-                painter = painterResource(R.drawable.title),
-                contentDescription = "Title",
-                modifier = Modifier.padding(8.dp)
-            )
+            if (isSystemInDarkTheme()) {
+                Image(
+                    painter = painterResource(R.drawable.title_dark),
+                    contentDescription = "Title",
+                    modifier = Modifier.padding(8.dp)
+                )
+            }else {
+                Image(
+                    painter = painterResource(R.drawable.title_light),
+                    contentDescription = "Title",
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
         }
-        var module by remember { mutableStateOf("Hide and seek") }
+        var module by remember { mutableStateOf(modeList[0]) }
         ModeSelection {
             module = it
         }
@@ -113,7 +122,7 @@ fun HideAndSeekLogin() {
     var state by remember { mutableStateOf(ServerValidity.NOT_FOUND) }
     var url by remember { mutableStateOf(api.getConfig().base_url) }
     var username by remember { mutableStateOf(api.getConfig().username) }
-    val password_hint = if (api.getConfig().password_hash != null) "(not changed)" else "(empty)"
+    val passwordHint = if (api.getConfig().password_hash != null) "(not changed)" else "(empty)"
     var password by remember { mutableStateOf("") }
 
     Card(
@@ -121,7 +130,7 @@ fun HideAndSeekLogin() {
             .padding(8.dp)
             .fillMaxWidth(1f)
             .wrapContentHeight(),
-        colors = CardDefaults.cardColors(containerColor = colorResource(R.color.design_bg)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
         elevation = CardDefaults.elevatedCardElevation(8.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -179,7 +188,7 @@ fun HideAndSeekLogin() {
                     Text("Password")
                 },
                 placeholder = {
-                    Text(password_hint, color = Color.Gray)
+                    Text(passwordHint, color = Color.Gray)
                 })
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = state.icon, modifier = Modifier.padding(4.dp), color = DesignFg)
@@ -198,10 +207,24 @@ fun HideAndSeekLogin() {
 @Composable
 fun DebugModeLogin() {
     val c = LocalContext.current;
-    Button(onClick = {
-        c.startActivity(Intent(c, DebugActivity::class.java))
-    }) {
-        Text(text = "Debug")
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(1f)
+            .wrapContentHeight(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
+        elevation = CardDefaults.elevatedCardElevation(8.dp)
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()) {
+            Button(onClick = {
+                c.startActivity(Intent(c, DebugActivity::class.java))
+            },
+                modifier = Modifier
+                    .padding(horizontal = 8.dp, vertical = 4.dp)) {
+                Text(text = "Debug")
+            }
+        }
     }
 }
 
@@ -272,7 +295,62 @@ fun ModeSelection(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Dynamic Red Dark",
+    group = "dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Green Dark",
+    group = "dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Yellow Dark",
+    group = "dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.YELLOW_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Blue Dark",
+    group = "dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.BLUE_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Red Light",
+    group = "light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Green Light",
+    group = "light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Yellow Light",
+    group = "light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.YELLOW_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Blue Light",
+    group = "light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.BLUE_DOMINATED_EXAMPLE
+)
 @Composable
 fun GreetingPreview() {
     ComposeTestTheme {

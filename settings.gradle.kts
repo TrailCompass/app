@@ -15,8 +15,8 @@ pluginManagement {
         kotlin("jvm") version "1.9.24"
     }
 }
+
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
@@ -27,3 +27,4 @@ dependencyResolutionManagement {
 rootProject.name = "ComposeTest"
 include(":app")
 include(":api")
+include(":commons")

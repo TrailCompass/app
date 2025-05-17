@@ -2,20 +2,33 @@ package space.itoncek.composetest.hideandseek
 
 import android.app.Activity
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Wallpapers
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import org.mapsforge.core.model.LatLong
 import org.mapsforge.core.util.Parameters
@@ -49,16 +62,38 @@ class MapActivity : ComponentActivity() {
 fun MapActivityMain() {
     val ctx = LocalContext.current
     val markers = remember { mutableStateMapOf<String, Marker>() }
-    val ctxx = Local
-    MapsforgeMapView(markers = markers, context = ctx, onMapTap = { position ->
-        addMarker(
-            "marker_${System.currentTimeMillis()}",
-            position,
-            androidx.compose.ui.graphics.Color.Red.toArgb(),
-            ctx,
-            markers
-        )
-    })
+    Box(
+        modifier = Modifier
+            .fillMaxSize(1f)
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+
+        MapsforgeMapView(markers = markers, context = ctx, onMapTap = { position ->
+            addMarker(
+                "marker_${System.currentTimeMillis()}",
+                position,
+                androidx.compose.ui.graphics.Color.Red.toArgb(),
+                ctx,
+                markers
+            )
+        })
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(.9f)
+                    .height(96.dp)
+                    .padding(top = 16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+                elevation = CardDefaults.elevatedCardElevation(8.dp)
+            ) {
+
+            }
+        }
+    }
 }
 
 fun addMarker(
@@ -168,7 +203,63 @@ fun MapsforgeMapView(
     }, modifier = Modifier.fillMaxSize())
 }
 
-@Preview(showBackground = true)
+@Preview(
+    name = "Dynamic Red Dark",
+    group = "dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Green Dark",
+    group = "dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Yellow Dark",
+    group = "dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.YELLOW_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Blue Dark",
+    group = "dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.BLUE_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Red Light",
+    group = "light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.RED_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Green Light",
+    group = "light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.GREEN_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Yellow Light",
+    group = "light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.YELLOW_DOMINATED_EXAMPLE
+)
+@Preview(
+    name = "Dynamic Blue Light",
+    group = "light",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
+    wallpaper = Wallpapers.BLUE_DOMINATED_EXAMPLE
+)
+@Preview(showBackground = true, apiLevel = 33)
 @Composable
 fun GreetingPreview5() {
     ComposeTestTheme {
