@@ -1,3 +1,6 @@
+import com.android.build.api.dsl.Packaging
+import com.android.build.gradle.internal.packaging.defaultExcludes
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,11 +8,11 @@ plugins {
 }
 version = "v0.0.0.8"
 android {
-    namespace = "space.itoncek.composetest"
+    namespace = "space.itoncek.trailcompass"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "space.itoncek.composetest"
+        applicationId = "space.itoncek.trailcompass"
         minSdk = 33
         targetSdk = 35
         versionCode = 1
@@ -17,6 +20,12 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+
+    packaging {
+        resources.excludes.add("META-INF/DEPENDENCIES")
+    }
+
 
     buildTypes {
         release {
@@ -68,4 +77,6 @@ dependencies {
     implementation(libs.mapsforge.themes)
     implementation(libs.androidsvg)
     implementation(libs.barcodescannerview)
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
 }

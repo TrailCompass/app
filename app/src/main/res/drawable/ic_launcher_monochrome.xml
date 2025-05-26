@@ -13,16 +13,17 @@
             android:fillColor="#00000000"
             android:strokeColor="#ffffff"/>
         <path
-            android:pathData="M754.4,245.6L556.1,556.2L245.6,754.4L443.8,443.8L754.4,245.6Z"
-            android:fillColor="#ECF1FC"/>
-        <path
             android:pathData="M754.4,245.6L556.1,556.2L500,500L754.4,245.6Z"
-            android:fillColor="#E71D1D"/>
-        <path
-            android:pathData="M754.4,245.6L443.8,443.8L500,500L754.4,245.6Z"
-            android:fillColor="#FDEBEB"/>
+            android:fillColor="#ffffff"/>
         <path
             android:pathData="M245.6,754.4L500,500L443.8,443.8L245.6,754.4Z"
-            android:fillColor="#2058DD"/>
+            android:fillColor="#ffffff"/>
+        <path
+            android:pathData="M754.4,245.6L556.1,556.2L245.6,754.4L443.8,443.8L754.4,245.6Z"
+            android:strokeColor="#ffffff"
+            android:strokeWidth="8"/>
+        <path
+            android:pathData="M754.4,245.6L443.8,443.8L500,500L754.4,245.6Z"
+            android:strokeColor="#ffffff"/>
     </group>
 </vector>

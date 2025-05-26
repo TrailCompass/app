@@ -1,5 +1,5 @@
 [versions]
-agp = "8.8.2"
+agp = "8.9.3"
 androidsvg = "1.4"
 kotlin = "2.1.20"
 coreKtx = "1.16.0"
@@ -8,12 +8,13 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.9.0"
 activityCompose = "1.10.1"
-composeBom = "2025.05.00"
+composeBom = "2025.05.01"
 commonsCollections4 = "4.4"
 commonsCompress = "1.27.1"
-commonsIo = "2.19.0"
 commonsLang3 = "3.17.0"
+commonsIo = "2.19.0"
 commonsText = "1.9"
+materialIconsExtended = "1.7.8"
 okhttp = "4.12.0"
 json = "20250107"
 mapsforge = "0.23.0"
@@ -22,6 +23,8 @@ barcodescannerview = "1.6.0"
 [libraries]
 androidsvg = { module = "com.caverock:androidsvg", version.ref = "androidsvg" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsExtended" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

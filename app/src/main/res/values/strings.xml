@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ComposeTest</string>
+    <string name="app_name">TrailCompass</string>
     <string name="title_activity_debug">DebugActivity</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_await_start_ui">AwaitStartUI</string>

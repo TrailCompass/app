@@ -1,4 +1,4 @@
-package space.itoncek.composetest
+package space.itoncek.trailcompass
 
 import org.junit.Test
 

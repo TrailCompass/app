@@ -1,4 +1,4 @@
-package space.itoncek.composetest.ui.theme
+package space.itoncek.trailcompass.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

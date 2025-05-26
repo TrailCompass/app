@@ -1,4 +1,4 @@
-package space.itoncek.composetest
+package space.itoncek.trailcompass
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -42,12 +42,13 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.apache.commons.codec.digest.DigestUtils.sha512
 import org.apache.commons.codec.digest.DigestUtils.sha512Hex
-import space.itoncek.composetest.api.HideAndSeekApiFactory
-import space.itoncek.composetest.debug.DebugActivity
-import space.itoncek.composetest.hideandseek.LoginActivity
-import space.itoncek.composetest.ui.theme.ComposeTestTheme
-import space.itoncek.composetest.ui.theme.DesignFg
+import space.itoncek.trailcompass.api.HideAndSeekApiFactory
+import space.itoncek.trailcompass.debug.DebugActivity
+import space.itoncek.trailcompass.hideandseek.LoginActivity
+import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
+import space.itoncek.trailcompass.ui.theme.DesignFg
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI
 import space.itoncek.trailcompass.client.api.ServerValidity
 import kotlin.concurrent.thread
@@ -177,7 +178,7 @@ fun HideAndSeekLogin() {
 
                     if (it != "") {
                         val cfg = api.config
-                        cfg.password_hash = sha512Hex(it);
+                        cfg.password_hash = String(sha512(it));
                         api.saveConfig(cfg)
                     }
                 },

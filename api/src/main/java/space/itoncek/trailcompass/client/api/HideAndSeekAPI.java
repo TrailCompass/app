@@ -20,6 +20,7 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 import space.itoncek.trailcompass.api.ExchangeHandler;
+import space.itoncek.trailcompass.api.wrapper.WrappedExchange;
 import space.itoncek.trailcompass.commons.objects.GameState;
 import space.itoncek.trailcompass.commons.objects.Token;
 import space.itoncek.trailcompass.commons.requests.auth.LoginRequest;
@@ -30,9 +31,11 @@ import space.itoncek.trailcompass.commons.requests.gamemgr.FinishSetupRequest;
 import space.itoncek.trailcompass.commons.requests.gamemgr.GameStateRequest;
 import space.itoncek.trailcompass.commons.requests.gamemgr.StartingTimeRequest;
 import space.itoncek.trailcompass.commons.requests.map.MapHashRequest;
+import space.itoncek.trailcompass.commons.requests.map.MapRequest;
 import space.itoncek.trailcompass.commons.requests.system.ServerTimeRequest;
 import space.itoncek.trailcompass.commons.requests.system.ServerVersionRequest;
 import space.itoncek.trailcompass.commons.responses.generic.OkResponse;
+import space.itoncek.trailcompass.commons.responses.map.MapResponse;
 import space.itoncek.trailcompass.commons.responses.system.ServerTimeResponse;
 import space.itoncek.trailcompass.commons.responses.system.ServerVersionResponse;
 import space.itoncek.trailcompass.commons.utils.BackendException;
@@ -55,6 +58,11 @@ public abstract class HideAndSeekAPI {
 
     public HideAndSeekAPI() {
         ex = new ExchangeHandler(getConfig().base_url + "/");
+    }
+
+    public WrappedExchange getRaw() {
+        HideAndSeekConfig cfg = getConfig();
+        return ex.wrapped(getToken(cfg));
     }
 
     public ServerValidity checkValidity() throws BackendException {
@@ -99,6 +107,11 @@ public abstract class HideAndSeekAPI {
         return ex.map().getMapHash(new MapHashRequest(getToken(cfg))).sha256();
     }
 
+    public byte[] getMap() throws BackendException {
+        HideAndSeekConfig cfg = getConfig();
+        return ex.map().getMap(new MapRequest(getToken(cfg))).mapfile();
+    }
+
     private Token getToken(HideAndSeekConfig cfg) {
         return new Token(cfg.jwt_token);
     }
@@ -132,11 +145,6 @@ public abstract class HideAndSeekAPI {
     public ZonedDateTime getGameStartTime() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
         return ex.gameMgr().getStartingTime(new StartingTimeRequest(getToken(cfg))).dateTime();
-    }
-
-    public boolean cycleHider() throws BackendException {
-        HideAndSeekConfig cfg = getConfig();
-        return ex.gameMgr().cycleCurrentHider(new CycleCurrentHiderRequest(getToken(cfg))).equals(new OkResponse());
     }
 
     public void startWebsocketLoop(Runnable runnable) {

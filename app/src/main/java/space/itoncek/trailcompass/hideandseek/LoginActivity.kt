@@ -1,4 +1,4 @@
-package space.itoncek.composetest.hideandseek
+package space.itoncek.trailcompass.hideandseek
 
 import android.app.Activity
 import android.content.Intent
@@ -38,15 +38,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.apache.commons.codec.digest.DigestUtils
-import space.itoncek.composetest.api.HideAndSeekApiFactory
-import space.itoncek.composetest.runOnUiThread
-import space.itoncek.composetest.ui.theme.ComposeTestTheme
-import space.itoncek.composetest.ui.theme.DesignBg
-import space.itoncek.composetest.ui.theme.DesignBlueWhite
-import space.itoncek.composetest.ui.theme.DesignFg
-import space.itoncek.composetest.ui.theme.DesignShadow
+import org.apache.commons.io.IOUtils
+import space.itoncek.trailcompass.api.HideAndSeekApiFactory
+import space.itoncek.trailcompass.runOnUiThread
+import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI
 import space.itoncek.trailcompass.client.api.LoginResponse
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -54,6 +53,7 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.concurrent.thread
+import kotlin.math.log
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,7 +103,11 @@ fun LoginView() {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     trackColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
-                Text(text = label, modifier = Modifier.padding(8.dp, 4.dp), color = MaterialTheme.colorScheme.onSurface)
+                Text(
+                    text = label,
+                    modifier = Modifier.padding(8.dp, 4.dp),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     }
@@ -173,51 +177,15 @@ fun LoginView() {
                         localMapHash = DigestUtils.sha256Hex(FileInputStream(mapfile))
                     }
                     runOnUiThread {
-                        label = "Downloading"
+                        label = "Downloading, please wait"
                         progress = 1f
                     }
                     if (!remoteMapHash.equals(localMapHash)) {
-                        val url = URL(cfg.base_url + "/mapserver/getServerMap")
-                        val connection = url.openConnection() as HttpURLConnection
-                        connection.setRequestProperty("Authorization", "Bearer " + cfg.jwt_token)
-                        connection.connect()
-
-                        // expect HTTP 200 OK, so we don't mistakenly save error report
-                        // instead of the file
-                        if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                            throw RuntimeException(
-                                IOException(
-                                    ("Server returned HTTP " + connection.getResponseCode() + " " + connection.getResponseMessage())
-                                )
-                            )
-                        }
-
-                        // this will be useful to display download percentage
-                        // might be -1: server did not report the length
-                        val fileLength = connection.contentLength
-                        Log.i("LoginActivity", "FL $fileLength")
-
-                        // download the file
-                        val input = connection.inputStream
                         val output = FileOutputStream(mapfile)
+                        val input = api.map
 
-                        val data = ByteArray(65535)
-                        var total: Long = 0
-                        var count: Int
-                        while ((input.read(data).also { count = it }) != -1) {
-                            output.write(data, 0, count)
-                            total += count.toLong()
-                            if (fileLength > 0)  // only if total length is known
-                            {
-                                val finalTotal = total.toInt()
-                                runOnUiThread {
-                                    progress = finalTotal.toFloat() / fileLength
-                                    label =
-                                        "Map download ${(100 * (finalTotal.toFloat() / fileLength)).toInt()}%"
-                                }
-                            }
-                        }
-                        Log.i("LoginActivity", "total $total")
+                        val bais = ByteArrayInputStream(input)
+                        IOUtils.copyLarge(bais, output);
                     }
 
                     runOnUiThread {

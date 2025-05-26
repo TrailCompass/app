@@ -1,4 +1,4 @@
-package space.itoncek.composetest.ui.theme
+package space.itoncek.trailcompass.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

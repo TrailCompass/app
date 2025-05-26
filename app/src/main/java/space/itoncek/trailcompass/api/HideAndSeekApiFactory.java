@@ -1,4 +1,4 @@
-package space.itoncek.composetest.api;
+package space.itoncek.trailcompass.api;
 
 import android.util.Log;
 

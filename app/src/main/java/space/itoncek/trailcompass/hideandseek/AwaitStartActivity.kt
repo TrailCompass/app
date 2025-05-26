@@ -1,4 +1,4 @@
-package space.itoncek.composetest.hideandseek
+package space.itoncek.trailcompass.hideandseek
 
 import android.app.Activity
 import android.content.Intent
@@ -37,11 +37,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.delay
 import org.apache.commons.lang3.time.DurationFormatUtils
-import space.itoncek.composetest.api.HideAndSeekApiFactory
-import space.itoncek.composetest.ui.theme.ComposeTestTheme
-import space.itoncek.composetest.ui.theme.DesignBg
-import space.itoncek.composetest.ui.theme.DesignFg
-import space.itoncek.composetest.ui.theme.DesignShadow
+import space.itoncek.trailcompass.api.HideAndSeekApiFactory
+import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI
 import java.time.Duration
 import java.time.ZonedDateTime
