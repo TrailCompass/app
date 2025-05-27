@@ -16,3 +16,6 @@ local.properties
 /*/build/
 .idea
 /app/release/*
+/.kotlin/errors/errors-1748359558159.log
+/.kotlin/sessions/kotlin-compiler-8882312703017435998.salive
+/.kotlin/sessions/kotlin-compiler-12770659352371804271.salive
