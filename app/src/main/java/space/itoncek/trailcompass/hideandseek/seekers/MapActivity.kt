@@ -1,16 +1,11 @@
-package space.itoncek.trailcompass.hideandseek
+package space.itoncek.trailcompass.hideandseek.seekers
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
-import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
-import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,10 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Build
-import androidx.compose.material.icons.rounded.ElectricBolt
-import androidx.compose.material.icons.rounded.Map
-import androidx.compose.material.icons.rounded.Quiz
 import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,11 +32,10 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
@@ -55,8 +45,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.IOUtils
 import org.mapsforge.core.model.LatLong
 import org.mapsforge.core.util.Parameters
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory
@@ -71,29 +59,13 @@ import org.mapsforge.map.util.MapViewProjection
 import space.itoncek.trailcompass.R
 import space.itoncek.trailcompass.api.HideAndSeekApiFactory
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI
-import space.itoncek.trailcompass.client.api.LoginResponse
-import space.itoncek.trailcompass.runOnUiThread
 import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import kotlin.concurrent.thread
 
-class MapActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
-        setContent {
-            ComposeTestTheme {
-                MapActivityMain()
-            }
-        }
-    }
-}
-
 @Composable
-fun MapActivityMain() {
+fun MapActivityMain(navigate: (String) -> Unit, screen: String) {
     val ctx = LocalContext.current
     val api: HideAndSeekAPI = HideAndSeekApiFactory(ctx.filesDir).generateApi()
     val markers = remember { mutableStateMapOf<String, Marker>() }
@@ -107,7 +79,7 @@ fun MapActivityMain() {
             addMarker(
                 "marker_${System.currentTimeMillis()}",
                 position,
-                androidx.compose.ui.graphics.Color.Red.toArgb(),
+                Color.Red.toArgb(),
                 ctx,
                 markers
             )
@@ -130,7 +102,7 @@ fun MapActivityMain() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(start = 20.dp, end = 8.dp, top =10.dp, bottom = 10.dp),
+                        .padding(start = 20.dp, end = 8.dp, top = 10.dp, bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
@@ -169,31 +141,13 @@ fun MapActivityMain() {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceAround,
                     ) {
-                        IconButton(onClick = {
-                            // TODO))
-                        }) {
-                            Icon(Icons.Rounded.Map, "Map", Modifier.size(48.dp));
-                        }
-                        IconButton(onClick = {
-                            // TODO))
-                        }) {
-                            Icon(Icons.Rounded.Quiz, "Requests", Modifier.size(48.dp));
-                        }
-                        IconButton(onClick = {
-                            // TODO))
-                        }) {
-                            Icon(Icons.Rounded.ElectricBolt, "Curses", Modifier.size(48.dp));
-                        }
-
-                        IconButton(onClick = {
-                            // TODO))
-                        }) {
-                            Icon(Icons.Rounded.Build, "Settings", Modifier.size(48.dp));
-                        }
+                        GenerateNavBar(navigate, "map")
                     }
 
                     Row(
-                        modifier = Modifier.wrapContentSize().padding(end = 8.dp),
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .padding(end = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
@@ -206,7 +160,9 @@ fun MapActivityMain() {
                 }
             }
         }
-        Text(modifier = Modifier.align(Alignment.BottomEnd).padding(end = 8.dp),text = "(c) OpenStreetMap contributors", fontSize = 8.sp)
+        Text(modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(end = 8.dp),text = "(c) OpenStreetMap contributors", fontSize = 8.sp)
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -227,6 +183,8 @@ fun MapActivityMain() {
     }
 }
 
+
+
 fun addMarker(
     id: String,
     position: LatLong,
@@ -234,7 +192,7 @@ fun addMarker(
     context: Context,
     markers: MutableMap<String, Marker>
 ) {
-    Log.w(MapActivity::class.simpleName, "TAP")
+    Log.w("MapActivity", "TAP")
     val bitmap = AndroidGraphicFactory.convertToBitmap(context.getDrawable(R.drawable.marker_blue));
     bitmap.scaleTo(62, 62)
     val marker = Marker(
@@ -244,7 +202,7 @@ fun addMarker(
         0
     )
     markers[id] = marker
-    Log.w(MapActivity::class.simpleName, "marker ${markers.size}")
+    Log.w("MapActivity","marker ${markers.size}")
 }
 
 fun removeMarker(id: String, markers: MutableMap<String, Marker>) {
@@ -256,7 +214,6 @@ fun MapsforgeMapView(
     markers: MutableMap<String, Marker>, onMapTap: (LatLong) -> Unit, context: Context
 ) {
     AndroidView(factory = { ctx ->
-
         val mapView = MapView(ctx).apply {
             isClickable = true
             mapScaleBar.isVisible = true
@@ -278,10 +235,10 @@ fun MapsforgeMapView(
 
             if (ctx.cacheDir == null) {
                 file = File("O:\\test\\ComposeTest\\data\\map.map")
-                Log.w(MapActivity::class.java.name, "Using override!")
+                Log.w("MapActivity","Using override!")
             } else {
                 file = File(ctx.cacheDir.path + "/map.map")
-                Log.i(MapActivity::class.java.name, "Mapfile found!")
+                Log.i("MapActivity", "Mapfile found!")
             }
 
             val mapDataStore: MapDataStore = MapFile(FileInputStream(file))
@@ -323,7 +280,7 @@ fun MapsforgeMapView(
         if (activity != null) {
             AndroidGraphicFactory.createInstance(activity.application)
         } else {
-            Log.w(MapActivity::class.java.name, "Unable to init AndroidGraphicFactory")
+            Log.w("MapActivity","Unable to init AndroidGraphicFactory")
         }
         markers.forEach { (_, marker) ->
             if (!mapView.layerManager.layers.contains(marker)) {
@@ -331,7 +288,11 @@ fun MapsforgeMapView(
             }
         }
         mapView.layerManager.redrawLayers()
-    }, modifier = Modifier.fillMaxSize())
+    }, modifier = Modifier.fillMaxSize(), onRelease = { o ->
+        o.destroy()
+        o.destroyAll()
+        System.gc()
+    })
 }
 
 //@Preview(
@@ -393,6 +354,6 @@ fun MapsforgeMapView(
 @Composable
 fun GreetingPreview5() {
     ComposeTestTheme {
-        MapActivityMain()
+        MapActivityMain({ }, "map")
     }
 }

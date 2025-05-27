@@ -4,4 +4,6 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_await_start_ui">AwaitStartUI</string>
     <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_requests">RequestsActivity</string>
+    <string name="title_activity_in_game_ui">InGameUI</string>
 </resources>

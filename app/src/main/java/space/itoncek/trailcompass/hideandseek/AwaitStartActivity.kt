@@ -40,6 +40,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils
 import space.itoncek.trailcompass.api.HideAndSeekApiFactory
 import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI
+import space.itoncek.trailcompass.hideandseek.seekers.InGameSeekerUI
 import java.time.Duration
 import java.time.ZonedDateTime
 import kotlin.concurrent.thread
@@ -74,7 +75,8 @@ fun AwaitStart() {
                 val d = Duration.between(ZonedDateTime.now(), startTime);
                 time = format(d)
                 if (d.toMillis() < 1000) {
-                    ctx.startActivity(Intent(ctx, MapActivity::class.java))
+                    /* TODO)) Different for hiders! */
+                    ctx.startActivity(Intent(ctx, InGameSeekerUI::class.java))
                     val a = ctx as? Activity
                     a?.finish()
                     break

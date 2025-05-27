@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
 }
-version = "v0.0.0.8"
+version = "v0.0.9"
 dependencies {
     implementation libs.json
     implementation libs.okhttp

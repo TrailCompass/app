@@ -1,15 +1,13 @@
-import com.android.build.api.dsl.Packaging
-import com.android.build.gradle.internal.packaging.defaultExcludes
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("plugin.serialization") version "2.0.21"
 }
-version = "v0.0.0.8"
+version = "v0.0.9"
 android {
     namespace = "space.itoncek.trailcompass"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "space.itoncek.trailcompass"
@@ -50,6 +48,7 @@ android {
 
 dependencies {
     implementation(project(":api"))
+    implementation(project(":commons"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -65,6 +64,16 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Jetpack Compose integration
+    implementation(libs.androidx.navigation.compose)
+    // Views/Fragments integration
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    // Feature module support for Fragments
+    implementation(libs.androidx.navigation.dynamic.features.fragment)
+    // Testing Navigation
+    androidTestImplementation(libs.androidx.navigation.testing)
+
     implementation(libs.commons.collections4)
     implementation(libs.commons.compress)
     implementation(libs.commons.lang3)
