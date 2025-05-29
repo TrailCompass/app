@@ -24,7 +24,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ComposeTest"
+rootProject.name = "TrailCompass"
 include(":app")
 include(":api")
 include(":commons")

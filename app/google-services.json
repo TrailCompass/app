@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "394447646101",
+    "project_id": "trail-compass",
+    "storage_bucket": "trail-compass.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394447646101:android:c03efc23cea0b861ca1a9c",
+        "android_client_info": {
+          "package_name": "space.itoncek.trailcompass"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY7ZjdIXVm7OtKBqS-for6M2_QvMbmwwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -139,7 +139,8 @@ public abstract class HideAndSeekAPI {
 
     public boolean startGame() throws BackendException {
         HideAndSeekConfig cfg = getConfig();
-        return ex.gameMgr().finishSetup(new FinishSetupRequest(getToken(cfg))).equals(new OkResponse());
+        //return ex.gameMgr().finishSetup(new FinishSetupRequest(getToken(cfg))).equals(new OkResponse());
+        return true;
     }
 
     public ZonedDateTime getGameStartTime() throws BackendException {
