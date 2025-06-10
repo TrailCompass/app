@@ -2,19 +2,15 @@ package space.itoncek.trailcompass.client.api;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import java.util.Objects;
 import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
@@ -26,16 +22,12 @@ import space.itoncek.trailcompass.commons.objects.Token;
 import space.itoncek.trailcompass.commons.requests.auth.LoginRequest;
 import space.itoncek.trailcompass.commons.requests.auth.ProfileRequest;
 import space.itoncek.trailcompass.commons.requests.gamemgr.CurrentHiderRequest;
-import space.itoncek.trailcompass.commons.requests.gamemgr.CycleCurrentHiderRequest;
-import space.itoncek.trailcompass.commons.requests.gamemgr.FinishSetupRequest;
 import space.itoncek.trailcompass.commons.requests.gamemgr.GameStateRequest;
 import space.itoncek.trailcompass.commons.requests.gamemgr.StartingTimeRequest;
 import space.itoncek.trailcompass.commons.requests.map.MapHashRequest;
 import space.itoncek.trailcompass.commons.requests.map.MapRequest;
 import space.itoncek.trailcompass.commons.requests.system.ServerTimeRequest;
 import space.itoncek.trailcompass.commons.requests.system.ServerVersionRequest;
-import space.itoncek.trailcompass.commons.responses.generic.OkResponse;
-import space.itoncek.trailcompass.commons.responses.map.MapResponse;
 import space.itoncek.trailcompass.commons.responses.system.ServerTimeResponse;
 import space.itoncek.trailcompass.commons.responses.system.ServerVersionResponse;
 import space.itoncek.trailcompass.commons.utils.BackendException;

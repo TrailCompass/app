@@ -9,9 +9,8 @@ import space.itoncek.trailcompass.client.api.HideAndSeekAPI
 import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
 
 @Composable
-fun CursesActivityMain(api: HideAndSeekAPI?) {
+fun SeekerCursesActivityMain(api: HideAndSeekAPI?) {
     val ctx = LocalContext.current
-
 }
 
 
@@ -72,8 +71,8 @@ fun CursesActivityMain(api: HideAndSeekAPI?) {
 //    wallpaper = Wallpapers.BLUE_DOMINATED_EXAMPLE
 //)
 @Composable
-fun GreetingPreview7() {
+fun SeekerCursesPreview() {
     ComposeTestTheme {
-        CursesActivityMain(null)
+        SeekerCursesActivityMain(null)
     }
 }

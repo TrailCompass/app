@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Build
-import androidx.compose.material.icons.rounded.ElectricBolt
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.Map
 import androidx.compose.material.icons.rounded.Quiz
@@ -72,7 +71,7 @@ class InGameHiderUI : ComponentActivity() {
 @SuppressLint("DefaultLocale")
 @Composable
 fun InGameSeekerActivity() {
-    var screen by remember { mutableStateOf("map") }
+    var screen by remember { mutableStateOf("cards") }
     val ctx = LocalContext.current
     val api: HideAndSeekAPI = HideAndSeekApiFactory(ctx.filesDir).generateApi()
     var username by remember { mutableStateOf("Loading...") }
@@ -136,7 +135,7 @@ fun InGameSeekerActivity() {
             Box(modifier = Modifier.weight(1f)) {
                 when (screen) {
                     "requests" -> HiderRequestsActivity(api)
-                    "cards" -> HiderCardsActivity(api)
+                    "cards" -> HiderCardsActivity(null)
                     "settings" -> SettingsIngameActivityMain(api)
                 }
             }
@@ -190,7 +189,7 @@ fun InGameSeekerActivity() {
                         IconButton(onClick = {
                             navigate("cards")
                         }, enabled = screen != "cards") {
-                            Icon( /* Todo)) change icon! */Icons.Rounded.Layers, "Cards", Modifier.size(48.dp));
+                            Icon(Icons.Rounded.Layers, "Cards", Modifier.size(48.dp));
                         }
 
                         IconButton(onClick = {

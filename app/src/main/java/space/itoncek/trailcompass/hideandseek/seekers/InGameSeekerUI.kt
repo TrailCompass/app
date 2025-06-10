@@ -134,7 +134,7 @@ fun InGameSeekerActivity() {
             Box(modifier = Modifier.weight(1f)) {
                 when (screen) {
                     "requests" -> RequestsActivityMain(api)
-                    "curses" -> CursesActivityMain(api)
+                    "curses" -> SeekerCursesActivityMain(api)
                     "settings" -> SettingsIngameActivityMain(api)
                 }
             }
