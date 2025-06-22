@@ -96,6 +96,4 @@ dependencies {
     implementation(libs.mapsforge.themes)
     implementation(libs.androidsvg)
     implementation(libs.barcodescannerview)
-    implementation(libs.androidx.material.icons.core)
-    implementation(libs.androidx.material.icons.extended)
 }

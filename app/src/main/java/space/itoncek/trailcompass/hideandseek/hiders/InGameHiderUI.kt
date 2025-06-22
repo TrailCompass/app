@@ -17,10 +17,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Build
-import androidx.compose.material.icons.rounded.Layers
-import androidx.compose.material.icons.rounded.Map
-import androidx.compose.material.icons.rounded.Quiz
-import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -46,6 +42,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.composables.Layers
+import com.composables.Map
+import com.composables.Quiz
+import com.composables.Sync
 import kotlinx.coroutines.delay
 import space.itoncek.trailcompass.R
 import space.itoncek.trailcompass.api.HideAndSeekApiFactory
@@ -126,7 +126,7 @@ fun InGameSeekerActivity() {
                         IconButton(onClick = {
                             // TODO))
                         }) {
-                            Icon(Icons.Rounded.Sync, "Sync");
+                            Icon(Sync, "Sync");
                         }
                     }
                 }
@@ -135,7 +135,7 @@ fun InGameSeekerActivity() {
             Box(modifier = Modifier.weight(1f)) {
                 when (screen) {
                     "requests" -> HiderRequestsActivity(api)
-                    "cards" -> HiderCardsActivity(null)
+                    "cards" -> HiderDeckActivity(null)
                     "settings" -> SettingsIngameActivityMain(api)
                 }
             }
@@ -179,17 +179,17 @@ fun InGameSeekerActivity() {
                         IconButton(onClick = {
                             navigate("map")
                         }, enabled = screen != "map") {
-                            Icon(Icons.Rounded.Map, "Map", Modifier.size(48.dp));
+                            Icon(Map, "Map", Modifier.size(48.dp));
                         }
                         IconButton(onClick = {
                             navigate("requests")
                         }, enabled = screen != "requests") {
-                            Icon(Icons.Rounded.Quiz, "Requests", Modifier.size(48.dp));
+                            Icon(Quiz, "Requests", Modifier.size(48.dp));
                         }
                         IconButton(onClick = {
                             navigate("cards")
                         }, enabled = screen != "cards") {
-                            Icon(Icons.Rounded.Layers, "Cards", Modifier.size(48.dp));
+                            Icon(Layers, "Cards", Modifier.size(48.dp));
                         }
 
                         IconButton(onClick = {
