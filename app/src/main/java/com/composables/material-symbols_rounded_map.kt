@@ -1,5 +1,5 @@
 package com.composables
-//  https://composeicons.com/
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 val Map: ImageVector
     get() {
         if (_Map != null) return _Map!!
-        
+
         _Map = ImageVector.Builder(
             name = "Map",
             defaultWidth = 24.dp,
@@ -72,7 +72,7 @@ val Map: ImageVector
                 close()
             }
         }.build()
-        
+
         return _Map!!
     }
 

@@ -1,5 +1,5 @@
 package com.composables
-//  https://composeicons.com/
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 val Layers: ImageVector
     get() {
         if (_Layers != null) return _Layers!!
-        
+
         _Layers = ImageVector.Builder(
             name = "Layers",
             defaultWidth = 24.dp,
@@ -56,7 +56,7 @@ val Layers: ImageVector
                 moveToRelative(0f, -178f)
             }
         }.build()
-        
+
         return _Layers!!
     }
 

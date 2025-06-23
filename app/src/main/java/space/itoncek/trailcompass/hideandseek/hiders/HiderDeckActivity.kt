@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package space.itoncek.trailcompass.hideandseek.hiders
 
 import android.content.res.Configuration
@@ -13,13 +15,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +37,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.composables.Delete_forever
 import com.composables.Info
 import com.composables.Send
 import com.composables.Skull
@@ -158,6 +166,8 @@ fun SpawnPowerupCard(api: HideAndSeekAPI?, card: Card) {
 @Composable
 fun SpawnCurseCard(api: HideAndSeekAPI?, card: Card) {
     val ctx = LocalContext.current
+    var showDeleteDialog = remember { mutableStateOf(true) }
+
     Card(
         modifier = Modifier
             .fillMaxHeight()
@@ -177,16 +187,10 @@ fun SpawnCurseCard(api: HideAndSeekAPI?, card: Card) {
             ) {
                 IconButton({
                     runOnUiThread {
-                        Toast.makeText(ctx,"This is a curse", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(ctx, "This is a curse", Toast.LENGTH_SHORT).show()
                     }
                 }, modifier = Modifier.weight(1f).padding(bottom = 10.dp)) {
                     Icon(Skull, "skull", modifier = Modifier.size(64.dp))
-                }
-                IconButton({}, modifier = Modifier.weight(.8f)) {
-                    Icon(Info, "get_card_info")
-                }
-                IconButton({}, modifier = Modifier.weight(1f).padding(top = 8.dp)) {
-                    Icon(Send, "get_card_info")
                 }
             }
             Column(modifier = Modifier.weight(6f).padding(start = 8.dp)) {
@@ -206,14 +210,84 @@ fun SpawnCurseCard(api: HideAndSeekAPI?, card: Card) {
                     castingCost = curseMetadata.castingConst
                 }
 
-                Text("Curse of $title", fontWeight = FontWeight.Bold, fontSize = 23.sp,modifier = Modifier.wrapContentHeight())
-                Text(text = description, fontSize = 12.sp, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f).padding(top = 4.dp, bottom = 4.dp), style = TextStyle(
-                    lineHeight = 14.sp
-                ))
-                Text("Casting cost: $castingCost",modifier = Modifier.wrapContentHeight())
+                Text(
+                    "Curse of $title",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 23.sp,
+                    modifier = Modifier.wrapContentHeight()
+                )
+                Text(
+                    text = description,
+                    fontSize = 12.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f).padding(top = 4.dp, bottom = 4.dp),
+                    style = TextStyle(
+                        lineHeight = 14.sp
+                    )
+                )
+                Text("Casting cost: $castingCost", modifier = Modifier.wrapContentHeight())
+            }
+
+            Column {
+                IconButton({}, modifier = Modifier.weight(1f)) {
+                    Icon(Info, "get_curse_info")
+                }
+                IconButton({
+                    showDeleteDialog.value = true;
+                }, modifier = Modifier.weight(1f).padding(vertical = 8.dp)) {
+                    Icon(Delete_forever, "discard_curse")
+                }
+                IconButton({}, modifier = Modifier.weight(1f)) {
+                    Icon(Send, "cast_curse")
+                }
             }
         }
     }
+
+    DiscardDialog(card,showDeleteDialog, {
+
+    })
+}
+
+@Composable
+fun DiscardDialog(card: Card, showDeleteDialog: MutableState<Boolean>, discardCard: () -> Unit) {
+    if (showDeleteDialog.value) {
+        CreateDialog(
+            "Discard a card",
+            "This action is not reversible. Once \"confirm\" has been clicked, the card will be removed from your hand.\n\nCard: ${card.type.name}",
+            Delete_forever, {
+                discardCard.invoke()
+                showDeleteDialog.value = false;
+            },
+            {
+                showDeleteDialog.value = false;
+            })
+    }
+}
+
+@Composable
+fun CreateDialog(title: String, body: String, icon: ImageVector, confirm: () -> Unit, dismiss: () -> Unit){
+    AlertDialog(
+        onDismissRequest = {
+            // Dismiss the dialog when the user clicks outside the dialog or on the back
+            // button. If you want to disable that functionality, simply use an empty
+            // onDismissRequest.
+            dismiss.invoke()
+        },
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(icon, "dialog_icon", modifier = Modifier.padding(end = 8.dp))
+                Text(text = title)
+            }
+        },
+        text = { Text(text = body) },
+        confirmButton = {
+            TextButton(onClick = { confirm.invoke() }) { Text("Confirm") }
+        },
+        dismissButton = {
+            TextButton(onClick = { dismiss.invoke() }) { Text("Dismiss") }
+        }
+    )
 }
 
 fun trim(description: String): String {

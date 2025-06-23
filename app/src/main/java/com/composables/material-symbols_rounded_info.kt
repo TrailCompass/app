@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 val Info: ImageVector
     get() {
         if (_Info != null) return _Info!!
-        
+
         _Info = ImageVector.Builder(
             name = "Info",
             defaultWidth = 24.dp,
@@ -20,12 +20,18 @@ val Info: ImageVector
             path(
                 fill = SolidColor(Color(0xFF000000))
             ) {
-                moveTo(440f, 680f)
-                horizontalLineToRelative(80f)
-                verticalLineToRelative(-240f)
-                horizontalLineToRelative(-80f)
-                close()
-                moveToRelative(40f, -320f)
+                moveTo(480f, 680f)
+                quadToRelative(17f, 0f, 28.5f, -11.5f)
+                reflectiveQuadTo(520f, 640f)
+                verticalLineToRelative(-160f)
+                quadToRelative(0f, -17f, -11.5f, -28.5f)
+                reflectiveQuadTo(480f, 440f)
+                reflectiveQuadToRelative(-28.5f, 11.5f)
+                reflectiveQuadTo(440f, 480f)
+                verticalLineToRelative(160f)
+                quadToRelative(0f, 17f, 11.5f, 28.5f)
+                reflectiveQuadTo(480f, 680f)
+                moveToRelative(0f, -320f)
                 quadToRelative(17f, 0f, 28.5f, -11.5f)
                 reflectiveQuadTo(520f, 320f)
                 reflectiveQuadToRelative(-11.5f, -28.5f)
@@ -63,7 +69,7 @@ val Info: ImageVector
                 moveToRelative(0f, -320f)
             }
         }.build()
-        
+
         return _Info!!
     }
 

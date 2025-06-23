@@ -1,5 +1,5 @@
 package com.composables
-//  https://composeicons.com/
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 val Quiz: ImageVector
     get() {
         if (_Quiz != null) return _Quiz!!
-        
+
         _Quiz = ImageVector.Builder(
             name = "Quiz",
             defaultWidth = 24.dp,
@@ -92,7 +92,7 @@ val Quiz: ImageVector
                 close()
             }
         }.build()
-        
+
         return _Quiz!!
     }
 

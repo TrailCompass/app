@@ -1,5 +1,5 @@
 package com.composables
-//  https://composeicons.com/
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 val Sync: ImageVector
     get() {
         if (_Sync != null) return _Sync!!
-        
+
         _Sync = ImageVector.Builder(
             name = "Sync",
             defaultWidth = 24.dp,
@@ -80,7 +80,7 @@ val Sync: ImageVector
                 reflectiveQuadTo(720f, 478f)
             }
         }.build()
-        
+
         return _Sync!!
     }
 

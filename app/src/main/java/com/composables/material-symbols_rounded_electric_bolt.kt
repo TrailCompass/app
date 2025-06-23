@@ -1,5 +1,5 @@
 package com.composables
-//  https://composeicons.com/
+
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 val Electric_bolt: ImageVector
     get() {
         if (_Electric_bolt != null) return _Electric_bolt!!
-        
+
         _Electric_bolt = ImageVector.Builder(
             name = "Electric_bolt",
             defaultWidth = 24.dp,
@@ -49,7 +49,7 @@ val Electric_bolt: ImageVector
                 moveToRelative(-22f, -153f)
             }
         }.build()
-        
+
         return _Electric_bolt!!
     }
 
