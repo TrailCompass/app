@@ -29,6 +29,11 @@
             android:label="@string/title_activity_in_game_ui"
             android:theme="@style/Theme.TrailCompass" />
         <activity
+            android:name=".hideandseek.hiders.InGameHiderUI"
+            android:exported="false"
+            android:label="@string/title_activity_in_game_ui"
+            android:theme="@style/Theme.TrailCompass" />
+        <activity
             android:name=".hideandseek.AwaitStartActivity"
             android:exported="false"
             android:label="@string/title_activity_await_start_ui"

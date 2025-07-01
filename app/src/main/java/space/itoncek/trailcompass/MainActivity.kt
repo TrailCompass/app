@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,18 +40,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.apache.commons.codec.digest.DigestUtils.sha512
-import org.apache.commons.codec.digest.DigestUtils.sha512Hex
 import space.itoncek.trailcompass.api.HideAndSeekApiFactory
+import space.itoncek.trailcompass.client.api.HideAndSeekAPI
+import space.itoncek.trailcompass.client.api.ServerValidity
 import space.itoncek.trailcompass.debug.DebugActivity
 import space.itoncek.trailcompass.hideandseek.LoginActivity
 import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
 import space.itoncek.trailcompass.ui.theme.DesignFg
-import space.itoncek.trailcompass.client.api.HideAndSeekAPI
-import space.itoncek.trailcompass.client.api.ServerValidity
 import kotlin.concurrent.thread
 
 class MainActivity : ComponentActivity() {
@@ -200,6 +203,28 @@ fun HideAndSeekLogin() {
                 ) {
                     Text("Login")
                 }
+            }
+        }
+
+
+        val lifecycleOwner = LocalLifecycleOwner.current
+        val api: HideAndSeekAPI = HideAndSeekApiFactory(ctx.filesDir).generateApi()
+
+        DisposableEffect(ctx) {
+            val observer = LifecycleEventObserver { source, event ->
+                if (event == Lifecycle.Event.ON_START) {
+                    thread {
+                        val s = api.checkValidity();
+                        runOnUiThread {
+                            state = s
+                        }
+                    }
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
             }
         }
     }

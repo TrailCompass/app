@@ -4,6 +4,8 @@ package space.itoncek.trailcompass.hideandseek.hiders
 
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,9 +14,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -22,6 +29,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,58 +44,56 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.composables.Delete_forever
-import com.composables.Info
 import com.composables.Send
 import com.composables.Skull
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI
 import space.itoncek.trailcompass.commons.objects.Card
 import space.itoncek.trailcompass.commons.objects.CardClass
 import space.itoncek.trailcompass.commons.objects.CardType
+import space.itoncek.trailcompass.icons.TimeBonusBlue
+import space.itoncek.trailcompass.icons.TimeBonusGreen
+import space.itoncek.trailcompass.icons.TimeBonusOrange
+import space.itoncek.trailcompass.icons.TimeBonusRed
+import space.itoncek.trailcompass.icons.TimeBonusYellow
 import space.itoncek.trailcompass.runOnUiThread
 import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
 import java.util.UUID
 import kotlin.concurrent.thread
+
 
 @Composable
 fun HiderDeckActivity(api: HideAndSeekAPI?) {
     val ctx = LocalContext.current
     var cardList = remember { mutableListOf<Card>() }
     var handSize by remember { mutableIntStateOf(5) }
-    var update by remember { mutableStateOf(true) }
-    var test by remember { mutableStateOf("test1") }
-
-    if (api != null) {
-        val list = ArrayList<Card>();
-        thread {
-            list.addAll(api.raw.deck().listCards())
-            handSize = api.raw.deck().handSize;
-            runOnUiThread {
-                cardList = list
+    val update: ()-> Unit = {
+        if (api != null) {
+            val list = ArrayList<Card>();
+            thread {
+                list.addAll(api.raw.deck().listCards())
+                handSize = api.raw.deck().handSize;
+                runOnUiThread {
+                    cardList = list
+                }
             }
         }
+    }
+
+    if (api != null) {
+        update.invoke()
     } else {
         val list = ArrayList<Card>();
-        list.add(Card(UUID.randomUUID(), UUID.randomUUID(), CardType.Veto, false))
-        list.add(Card(UUID.randomUUID(), UUID.randomUUID(), CardType.Move, false))
-        list.add(
-            Card(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                CardType.TimeBonusGreen,
-                false
-            )
-        )
         list.add(
             Card(
                 UUID.randomUUID(),
@@ -96,6 +102,16 @@ fun HiderDeckActivity(api: HideAndSeekAPI?) {
                 false
             )
         )
+        list.add(
+            Card(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                CardType.TimeBonusGreen,
+                false
+            )
+        )
+        list.add(Card(UUID.randomUUID(), UUID.randomUUID(), CardType.Veto, false))
+        list.add(Card(UUID.randomUUID(), UUID.randomUUID(), CardType.Move, false))
         cardList = list;
     }
 
@@ -103,7 +119,8 @@ fun HiderDeckActivity(api: HideAndSeekAPI?) {
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -111,17 +128,17 @@ fun HiderDeckActivity(api: HideAndSeekAPI?) {
             val card = cardList.getOrNull(i);
             Row(
                 Modifier
-                    .weight(1f, true)
-                    .fillMaxWidth(1f)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
                     .padding(8.dp)
             ) {
                 if (card == null) {
                     SpawnEmptyCard()
                 } else {
                     when (card.type.cardClass) {
-                        CardClass.Curse -> SpawnCurseCard(api, card)
+                        CardClass.Curse -> SpawnCurseCard(api, card,update)
                         CardClass.Powerup -> SpawnPowerupCard(api, card)
-                        CardClass.Time -> SpawnTimeCard(api, card)
+                        CardClass.Time -> SpawnTimeCard(api, card,update)
                         null -> SpawnErrorCard("Null card type")
                     }
                 }
@@ -134,7 +151,7 @@ fun HiderDeckActivity(api: HideAndSeekAPI?) {
 fun SpawnErrorCard(s: String) {
     Box(
         modifier = Modifier
-            .fillMaxHeight()
+            .height(200.dp)
             .fillMaxWidth(),
     ) {
         Text(s)
@@ -142,35 +159,13 @@ fun SpawnErrorCard(s: String) {
 }
 
 @Composable
-fun SpawnTimeCard(api: HideAndSeekAPI?, card: Card) {
-    Box(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(),
-    ) {
-        Text(card.type.name)
-    }
-}
-
-@Composable
-fun SpawnPowerupCard(api: HideAndSeekAPI?, card: Card) {
-    Box(
-        modifier = Modifier
-            .fillMaxHeight()
-            .fillMaxWidth(),
-    ) {
-        Text(card.type.name)
-    }
-}
-
-@Composable
-fun SpawnCurseCard(api: HideAndSeekAPI?, card: Card) {
+fun SpawnTimeCard(api: HideAndSeekAPI?, card: Card, updateCardList: () -> Unit) {
     val ctx = LocalContext.current
-    var showDeleteDialog = remember { mutableStateOf(true) }
+    val showDeleteDialog = remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
-            .fillMaxHeight()
+            .height(100.dp)
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)
     ) {
@@ -183,17 +178,146 @@ fun SpawnCurseCard(api: HideAndSeekAPI?, card: Card) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(2f)
+                    .fillMaxHeight()
+            ) {
+                OutlinedIconButton({
+                    runOnUiThread {
+                        Toast.makeText(ctx, "This is a curse", Toast.LENGTH_SHORT).show()
+                    }
+                }, modifier = Modifier.weight(1f).size(96.dp),shape = RectangleShape, border = BorderStroke(0.dp,Color.Unspecified)) {
+                    Image(pickIcon(card, MaterialTheme.colorScheme.onPrimaryContainer), "skull", modifier = Modifier.size(128.dp))
+                }
+            }
+
+            Column(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .weight(5f)
+                    .fillMaxHeight()
+            ) {
+                val length = when (card.type) {
+                    CardType.TimeBonusRed -> TimeBonusDuration(2,3,5);
+                    CardType.TimeBonusOrange -> TimeBonusDuration(4,6,10)
+                    CardType.TimeBonusYellow -> TimeBonusDuration(6,9,15)
+                    CardType.TimeBonusGreen -> TimeBonusDuration(8,12,20)
+                    CardType.TimeBonusBlue -> TimeBonusDuration(12,18,30)
+                    null, CardType.Randomize, CardType.Veto, CardType.Duplicate, CardType.Move, CardType.Discard1, CardType.Discard2, CardType.Draw1Expand, CardType.Curse_Zoologist, CardType.Curse_UnguidedTourist, CardType.Curse_EndlessTumble, CardType.Curse_HiddenHangman, CardType.Curse_OverflowingChalice, CardType.Curse_MediocreTravelAgent, CardType.Curse_LuxuryCard, CardType.Curse_UTurn, CardType.Curse_BridgeTroll, CardType.Curse_WaterWeight, CardType.Curse_JammmedDoor, CardType.Curse_Cairn, CardType.Curse_Urbex, CardType.Curse_ImpressionableConsumer, CardType.Curse_EggPartner, CardType.Curse_DistantCuisine, CardType.Curse_RightTurn, CardType.Curse_Labyrinth, CardType.Curse_BirdGuide, CardType.Curse_SpottyMemory, CardType.Curse_LemonPhylactery, CardType.Curse_DrainedBrain, CardType.Curse_RansomNote, CardType.Curse_GamblersFeet -> TimeBonusDuration(-1,-1,-1);
+                }
+                var selectedGameMode = 1;
+
+                thread {
+                    if(api == null) {
+                        selectedGameMode = 2;
+                    } else {
+                        selectedGameMode = api.raw.gameMgr().gameSize
+                    }
+                }
+
+                val selectedLength = when (selectedGameMode) {
+                    1 -> length.small
+                    2 -> length.medium
+                    else -> length.large
+                }
+                Text(
+                    "$selectedLength minute bonus",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+
+                IconButton({
+                    showDeleteDialog.value = true;
+                }, modifier = Modifier.weight(1f)) {
+                    Icon(Delete_forever, "discard_timeBonus", modifier = Modifier.size(64.dp))
+                }
+            }
+        }
+
+
+        DiscardDialog(card,showDeleteDialog, {
+            api?.raw?.deck()?.discardCard(card.cardID)
+            updateCardList.invoke()
+        })
+    }
+}
+
+data class TimeBonusDuration(val small: Int, val medium: Int, val large: Int)
+
+
+fun pickIcon(card: Card, primaryColor: Color): ImageVector {
+    return when (card.type) {
+        CardType.TimeBonusRed -> TimeBonusRed(primaryColor).vector
+        CardType.TimeBonusOrange -> TimeBonusOrange(primaryColor).vector
+        CardType.TimeBonusYellow -> TimeBonusYellow(primaryColor).vector
+        CardType.TimeBonusGreen -> TimeBonusGreen(primaryColor).vector
+        CardType.TimeBonusBlue -> TimeBonusBlue(primaryColor).vector
+        null, CardType.Randomize, CardType.Veto, CardType.Duplicate, CardType.Move, CardType.Discard1, CardType.Discard2, CardType.Draw1Expand, CardType.Curse_Zoologist, CardType.Curse_UnguidedTourist, CardType.Curse_EndlessTumble, CardType.Curse_HiddenHangman, CardType.Curse_OverflowingChalice, CardType.Curse_MediocreTravelAgent, CardType.Curse_LuxuryCard, CardType.Curse_UTurn, CardType.Curse_BridgeTroll, CardType.Curse_WaterWeight, CardType.Curse_JammmedDoor, CardType.Curse_Cairn, CardType.Curse_Urbex, CardType.Curse_ImpressionableConsumer, CardType.Curse_EggPartner, CardType.Curse_DistantCuisine, CardType.Curse_RightTurn, CardType.Curse_Labyrinth, CardType.Curse_BirdGuide, CardType.Curse_SpottyMemory, CardType.Curse_LemonPhylactery, CardType.Curse_DrainedBrain, CardType.Curse_RansomNote, CardType.Curse_GamblersFeet -> Icons.Rounded.Warning
+    }
+}
+
+@Composable
+fun SpawnPowerupCard(api: HideAndSeekAPI?, card: Card) {
+    Box(
+        modifier = Modifier
+            .height(200.dp)
+            .fillMaxWidth(),
+    ) {
+        Text(card.type.name)
+    }
+}
+
+@Composable
+fun SpawnCurseCard(api: HideAndSeekAPI?, card: Card, updateCardList: () -> Unit) {
+    val ctx = LocalContext.current
+    val showDeleteDialog = remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .height(200.dp)
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.padding(10.dp)
+                .fillMaxSize()
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .weight(2f)
+                    .fillMaxHeight()
             ) {
                 IconButton({
                     runOnUiThread {
                         Toast.makeText(ctx, "This is a curse", Toast.LENGTH_SHORT).show()
                     }
-                }, modifier = Modifier.weight(1f).padding(bottom = 10.dp)) {
-                    Icon(Skull, "skull", modifier = Modifier.size(64.dp))
+                }, modifier = Modifier.fillMaxWidth().weight(1f)) {
+                    Icon(Skull, "skull",Modifier.size(96.dp))
+                }
+
+                Row {
+                    IconButton({
+                        showDeleteDialog.value = true;
+                    }) {
+                        Icon(Delete_forever, "discard_curse", modifier = Modifier.size(64.dp))
+                    }
+
+                    IconButton({
+                        runOnUiThread {
+                            Toast.makeText(ctx, "This is a curse", Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
+                        Icon(Send, "cast_curse", modifier = Modifier.size(64.dp))
+                    }
                 }
             }
-            Column(modifier = Modifier.weight(6f).padding(start = 8.dp)) {
+            Column(modifier = Modifier.weight(5f).padding(start = 8.dp)) {
                 var title by remember { mutableStateOf("Loading...") }
                 var description by remember { mutableStateOf("Loading...") }
                 var castingCost by remember { mutableStateOf("Loading...") }
@@ -213,39 +337,35 @@ fun SpawnCurseCard(api: HideAndSeekAPI?, card: Card) {
                 Text(
                     "Curse of $title",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 23.sp,
+                    fontSize = 18.sp,
                     modifier = Modifier.wrapContentHeight()
                 )
-                Text(
-                    text = description,
-                    fontSize = 12.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f).padding(top = 4.dp, bottom = 4.dp),
-                    style = TextStyle(
-                        lineHeight = 14.sp
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(top = 4.dp, bottom = 4.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    Text(
+                        text = description,
+                        fontSize = 12.sp,
+                        style = TextStyle(
+                            lineHeight = 14.sp
+                        )
                     )
+                }
+                Text(
+                    "Casting cost: $castingCost",
+                    modifier = Modifier.wrapContentHeight(),
+                    fontSize = 14.sp
                 )
-                Text("Casting cost: $castingCost", modifier = Modifier.wrapContentHeight())
-            }
-
-            Column {
-                IconButton({}, modifier = Modifier.weight(1f)) {
-                    Icon(Info, "get_curse_info")
-                }
-                IconButton({
-                    showDeleteDialog.value = true;
-                }, modifier = Modifier.weight(1f).padding(vertical = 8.dp)) {
-                    Icon(Delete_forever, "discard_curse")
-                }
-                IconButton({}, modifier = Modifier.weight(1f)) {
-                    Icon(Send, "cast_curse")
-                }
             }
         }
     }
 
     DiscardDialog(card,showDeleteDialog, {
-
+        api?.raw?.deck()?.discardCard(card.cardID)
+        updateCardList.invoke()
     })
 }
 
@@ -317,7 +437,7 @@ fun SpawnEmptyCard() {
                     cornerRadius = CornerRadius(8.dp.toPx())
                 )
             }
-            .fillMaxHeight()
+            .height(200.dp)
             .fillMaxWidth(),
     ) {
 

@@ -38,9 +38,11 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.delay
 import org.apache.commons.lang3.time.DurationFormatUtils
 import space.itoncek.trailcompass.api.HideAndSeekApiFactory
-import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
 import space.itoncek.trailcompass.client.api.HideAndSeekAPI
+import space.itoncek.trailcompass.hideandseek.hiders.InGameHiderUI
 import space.itoncek.trailcompass.hideandseek.seekers.InGameSeekerUI
+import space.itoncek.trailcompass.runOnUiThread
+import space.itoncek.trailcompass.ui.theme.ComposeTestTheme
 import java.time.Duration
 import java.time.ZonedDateTime
 import kotlin.concurrent.thread
@@ -75,10 +77,20 @@ fun AwaitStart() {
                 val d = Duration.between(ZonedDateTime.now(), startTime);
                 time = format(d)
                 if (d.toMillis() < 1000) {
-                    /* TODO)) Different for hiders! */
-                    ctx.startActivity(Intent(ctx, InGameSeekerUI::class.java))
-                    val a = ctx as? Activity
-                    a?.finish()
+                    thread {
+                        val api: HideAndSeekAPI = HideAndSeekApiFactory(ctx.filesDir).generateApi()
+                        val isHider = api.raw.gameMgr().currentHider == api.raw.auth().profile.id;
+                        runOnUiThread {
+                            if (isHider) {
+                                ctx.startActivity(Intent(ctx, InGameHiderUI::class.java))
+                            } else {
+                                ctx.startActivity(Intent(ctx, InGameSeekerUI::class.java))
+                            }
+
+                            val a = ctx as? Activity
+                            a?.finish()
+                        }
+                    }
                     break
                 } else {
                     delay(500.milliseconds)
